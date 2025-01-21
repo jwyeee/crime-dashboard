@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malaysia Crime</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="styles.css" rel="stylesheet">
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/map.js"></script>
+    <script src="https://code.highcharts.com/mapdata/countries/my/my-all.js"></script>
+    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+    <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+    
+</head>
+<body>
+<div class="main-container">
+    <div class="sidebar" id="sidebar">    
+        <div class="filters">
+            <h3>FILTERS</h3>
+            <!-- Range Slider for selecting year range -->
+            <div class="filter-container">
+                <label for="yearRangeStart">Year Range: </label>
+                <div class="slider-container">
+                    <input type="range" id="yearRangeStart" min="2016" max="2023" value="2016">
+                    <span id="startYearLabel">2016</span> - 
+                    <input type="range" id="yearRangeEnd" min="2016" max="2023" value="2023">
+                    <span id="endYearLabel">2023</span>
+                </div>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="filter-container">
+                <label for="crimeCategory">Crime Category: </label>
+                <select id="crimeCategory">
+                    <option value="all">All</option>
+                    <option value="Assault">Assault</option>
+                    <option value="Property">Property</option>
+                </select>
+            </div>
+
+            <!-- Type of Crime Filter -->
+            <div class="filter-container">
+                <label for="crimeType">Type of Crime: </label>
+                <select id="crimeType">
+                    <option value="all">All</option>
+                </select>
+            </div>
+
+            <!-- State Filter -->
+            <div class="filter-container">
+                <label for="crimeState">State: </label>
+                <select id="crimeState">
+                    <option value="Malaysia">All</option>
+                    <option value="Johor">Johor</option>
+                    <option value="Kedah">Kedah</option>
+                    <option value="Kelantan">Kelantan</option>
+                    <option value="Melaka">Malacca</option>
+                    <option value="Negeri Sembilan">Negeri Sembilan</option>
+                    <option value="Pahang">Pahang</option>
+                    <option value="Pulau Pinang">Penang</option>
+                    <option value="Perak">Perak</option>
+                    <option value="Perlis">Perlis</option>
+                    <option value="Sabah">Sabah</option>
+                    <option value="Sarawak">Sarawak</option>
+                    <option value="Selangor">Selangor</option>
+                    <option value="Terengganu">Terengganu</option>
+                    <option value="W.P. Kuala Lumpur">Wilayah Persekutuan Kuala Lumpur</option>
+                </select>
+            </div>
+        </div>
+        <hr> 
+        
+        <div class="export">
+            <h3>EXPORT</h3>
+            <div class="export-icons">
+                <button onclick="exportAllCharts()" class="export-button" id="export-img">
+                    <img src="https://pixsector.com/cache/d42ebae7/av8a6283d94b814dc20e0.png" alt="PNG Icon" class="export-icon" style="width: 30px; height: auto;">
+                </button>
+                <button class="export-button" id="export-csv">
+                    <img src="https://cdn0.iconfinder.com/data/icons/file-types-26/52/csv-file-1024.png" alt="CSV Icon" class="export-icon" style="width: 25px; height: auto;">
+                </button>
+                <button class="export-button" id="export-pdf">
+                    <img src="https://pixsector.com/cache/ceedc361/avd193541d97ae9b976fa.png" alt="PDF Icon" class="export-icon" style="width: 25px; height: auto;">
+                </button>
+            </div>
+            </div>
+            <hr> 
+            
+            <div class="info">
+                <div>
+                    <img src="https://www.svgrepo.com/show/361746/circle-information.svg" alt="Info Icon" style="width: 30px; height: auto;">
+                </div>
+                    <span class="tooltiptext">
+                        This is Malaysia's Crime Statistics: Explore crime trends by state, district, and type. 
+                        <br>This dashboard uses data from the Department of Statistics Malaysia (DOSM) from 2016 to 2023.
+                    </span>
+            </div>
+    
+            <div class="visitor-count" style="text-align: center;">
+                Views: <span id="visitor-count"></span>
+                <button class="reset-count-button">R</button>
+            </div>
+            
+        </div>
+
+    <div class="header">
+        <div class="header-content">
+            <button class="toggle-btn" id="toggle-btn">☰</button>
+            <div class="title">
+                <h1>Crime Data Dashboard</h1>
+            </div>
+            <div class="accessibility">
+                <div class="box" style="height:35px; width: 200px; border: 1px solid #ccc; text-align: center; padding-top: 20px;">
+                    Crime Level: High
+                </div>
+                <div class="chatbot-toggle">
+                    <button id="chatbot-toggle-button">
+                        <img src="https://www.svgrepo.com/show/379963/chatbot.svg" alt="Chatbot Icon" style="width: 35px; height: auto;">
+                    </button>
+                    <span class="tooltiptext">Chatbot</span>
+                </div>
+
+                <div class="help">
+                    <div>
+                        <img src="https://icon-library.com/images/help-icon-png/help-icon-png-0.jpg" alt="Help Icon" style="width: 30px; height: auto;">
+                    </div>
+                    <span class="tooltiptext">Help</span>
+                </div>
+                <div class="setting">
+                    <button class="setting-button">
+                        <img src="https://static-00.iconduck.com/assets.00/settings-icon-1964x2048-8nigtrtt.png" alt="Setting Icon" style="width: 27px; height: auto;">
+                    </button>
+                </div>
+                <!-- Collapsible settings bar -->
+                <div id="collapsibleBar" class="collapsible-bar">
+                    <h3>Settings</h3>
+                    
+                    Mode:
+                    <!-- Light/Dark Mode Toggle -->
+                    <div class="setting">
+                        <button class="btn" id="btn-light">
+                            <i class="fas fa-sun"></i>
+                        </button>
+                        <button class="btn" id="btn-dark">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
+                    <p></p>
+
+                    Language:
+                    <!-- Language Selector -->
+                    <div class="setting">
+                        <label for="lang-en">
+                            <input type="radio" id="lang-en" name="language" value="en">
+                            English
+                        </label>
+                        <label for="lang-ms">
+                            <input type="radio" id="lang-ms" name="language" value="ms">
+                            Malay
+                        </label>
+                    </div>
+                    <p></p>
+                    
+                    Font Size:
+                    <!-- Font Size Selector -->
+                    <div class="setting">
+                        <button class="btn btn-font-size" id="btn-decrease">-</button>
+                        <span id="fontSizeLabel">Medium</span>
+                        <button class="btn btn-font-size" id="btn-increase">+</button>
+                    </div>
+                </div>
+
+                <div id="chatbot-container" style="display: none;">
+                    <div id="chatbot-header">Crime Dashboard Assistant</div>
+                    <div id="chatbot-messages"></div>
+                    <div id="chatbot-input-container">
+                        <input id="chatbot-input" type="text" placeholder="Ask a question..." />
+                        <button id="chatbot-send">Send</button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>   
+        
+        <div class="export-container">
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-content">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1979/1979154.png" alt="Total Crimes" class="card-image" />
+                        <div class="card-value">
+                            <p id="totalCard"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <img id="crimeCategoryImage" src="https://cdn-icons-png.freepik.com/512/634/634755.png" alt="Crime Image" class="card-image" />
+                        <div class="card-value">
+                            <p id="categoryCard"></p>
+                        </div>
+                    </div>
+                </div>    
+                <div class="card">
+                    <div class="card-content">
+                        <img id="crimeTypeImage" src="https://static.thenounproject.com/png/412496-200.png" alt="Total Crimes" class="card-image" />
+                        <div class="card-value">
+                            <p id="typeCard"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <img id="crimeStateImage" src="https://www.flagcolorcodes.com/filter?f=selangor&e=waves" alt="Total Crimes" class="card-image"/>
+                        <div class="card-value">
+                            <p id="stateCard"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <img src="https://cdn-icons-png.flaticon.com/512/17942/17942403.png" alt="Total Crimes" class="card-image" />
+                        <div class="card-value">
+                            <p id="districtCard"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex;"> 
+                <div class="chart-section">
+                    <div class="chart-item">
+                        <div id="crimeLineChart"></div>
+                    </div>
+                    
+                    <div class="chart-item">
+                        <div id="crimeDonutChart"></div>
+                    </div>
+
+                    <div class="chart-item">
+                        <div id="crimeStackedBarChart"></div>
+                    </div>
+            
+                    <div class="chart-item" style="background-color: #F0F0F0;">
+                        <div id="crimeDrilldownBarChart"></div>
+                    </div>
+
+                    <div class="chart-item" style="background-color: #F0F0F0; padding-top: 0px;">
+                        <div id="crimeMapChart"></div>
+                    </div>
+                    
+                    <div class="chart-item" style="background-color: #F0F0F0;">
+                        <div id="crimeTop5BarChart"></div>
+                    </div>  
+                </div> 
+            </div>
+        </div> 
+    </div>
+        
+    <div id="stateInfoModal" style="display: none;">
+        <div class="modal-content">
+            <span onclick="closeModal()" class="close-btn">&times;</span>
+            <div id="stateName"></div>
+            <p></p>
+        </div>
+    </div>    
+     
+</div>
+        
+<script>
+
+function exportAllCharts() {
+    // Select the container that holds the main content of the dashboard
+    const mainContentContainer = document.querySelector('.header, .export-container');
+
+    const elements = mainContentContainer.querySelectorAll('*');
+    elements.forEach(element => {
+        element.style.color = 'rgb(0, 0, 0)'; // Set text color to black
+    });
+
+    html2canvas(mainContentContainer, {
+        useCORS: true, // Allow cross-origin images
+        scale: 2, 
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = 'dashboard_snapshot.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+}
+
+const toggleBtn = document.getElementById('toggle-btn');
+const sidebar = document.getElementById('sidebar');
+const header = document.querySelector('.header'); // Select the header
+const content = document.querySelector('.cards-container'); // Select content (cards container)
+
+toggleBtn.addEventListener('click', () => {
+    // Toggle the sidebar's collapsed state
+    sidebar.classList.toggle('collapsed');
+    
+    // Toggle the header's expanded state
+    header.classList.toggle('expanded');
+    
+    // Toggle content's expanded state
+    content.classList.toggle('expanded');
+});
+
+
+
+const chatbotToggleButton = document.getElementById("chatbot-toggle-button");
+const chatbotContainer = document.getElementById("chatbot-container");
+const chatbotInput = document.getElementById("chatbot-input");
+const chatbotMessages = document.getElementById("chatbot-messages");
+const chatbotSend = document.getElementById("chatbot-send");
+
+// Toggle chatbot container visibility
+chatbotToggleButton.addEventListener("click", () => {
+    if (chatbotContainer.style.display === "none") {
+        chatbotContainer.style.display = "flex";
+    } else {
+        chatbotContainer.style.display = "none";
+    }
+});
+
+// Send a message
+chatbotSend.addEventListener("click", sendMessage);
+
+function sendMessage() {
+    const userMessage = chatbotInput.value.trim();
+    if (!userMessage) return;
+
+    // Display user message
+    const userMessageElement = document.createElement("div");
+    userMessageElement.textContent = `You: ${userMessage}`;
+    userMessageElement.style.margin = "5px 0";
+    userMessageElement.style.textAlign = "right";
+    chatbotMessages.appendChild(userMessageElement);
+
+    chatbotInput.value = "";
+
+    // Send message to the backend
+    fetch("/chatbot", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: userMessage })
+    })
+        .then(response => response.json())
+        .then(data => {
+            const botMessageElement = document.createElement("div");
+            botMessageElement.textContent = `Bot: ${data.response}`;
+            botMessageElement.style.margin = "5px 0";
+            botMessageElement.style.textAlign = "left";
+            chatbotMessages.appendChild(botMessageElement);
+
+            // Auto-scroll to the latest message
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        })
+        .catch(error => console.error("Error:", error));
+}
+
+
+
+// Light/Dark Mode Toggle
+document.getElementById('btn-light').addEventListener('click', function () {
+    document.body.classList.remove('dark-mode');
+    document.body.classList.add('light-mode');
+});
+
+document.getElementById('btn-dark').addEventListener('click', function () {
+    document.body.classList.remove('light-mode');
+    document.body.classList.add('dark-mode');
+});
+
+// Language Selection
+document.getElementById('lang-en').addEventListener('change', function () {
+    if (this.checked) {
+        alert('Language switched to English');
+        // Implement logic for English content
+    }
+});
+
+document.getElementById('lang-ms').addEventListener('change', function () {
+    if (this.checked) {
+        alert('Language switched to Malay');
+        // Implement logic for Malay content
+    }
+});
+
+// Font Size Adjustment
+let currentFontSize = 16; // Default font size in px
+
+document.getElementById('btn-decrease').addEventListener('click', function () {
+    if (currentFontSize > 12) { // Minimum font size
+        currentFontSize -= 2;
+        document.body.style.fontSize = currentFontSize + 'px';
+        updateFontSizeLabel();
+    }
+});
+
+document.getElementById('btn-increase').addEventListener('click', function () {
+    if (currentFontSize < 24) { // Maximum font size
+        currentFontSize += 2;
+        document.body.style.fontSize = currentFontSize + 'px';
+        updateFontSizeLabel();
+    }
+});
+
+function updateFontSizeLabel() {
+    const fontSizeLabel = document.getElementById('fontSizeLabel');
+    if (currentFontSize === 12) {
+        fontSizeLabel.textContent = 'Small';
+    } else if (currentFontSize === 16) {
+        fontSizeLabel.textContent = 'Medium';
+    } else if (currentFontSize === 20) {
+        fontSizeLabel.textContent = 'Large';
+    } else if (currentFontSize === 24) {
+        fontSizeLabel.textContent = 'Extra Large';
+    }
+}
+
+// Apply initial font size
+document.body.style.fontSize = currentFontSize + 'px';
+updateFontSizeLabel();
+
+
+// Visitor Counter
+var counterContainer = document.querySelector("#visitor-count");
+var resetButton = document.querySelector(".reset-count-button");
+var visitCount = localStorage.getItem("page_view");
+
+if (visitCount === null) {
+    visitCount = 0; 
+} else {
+    visitCount = Number(visitCount) + 1; 
+}
+
+localStorage.setItem("page_view", visitCount);
+
+counterContainer.innerHTML = visitCount;
+
+resetButton.addEventListener("click", () => {
+    visitCount = 0; // Reset count to 0
+    localStorage.setItem("page_view", visitCount); 
+    counterContainer.innerHTML = visitCount; 
+});
+
+document.querySelector(".setting-button").addEventListener("click", function() {
+    const collapsibleBar = document.getElementById("collapsibleBar");
+    
+    // Toggle visibility
+    if (collapsibleBar.style.display === "none" || collapsibleBar.style.display === "") {
+        collapsibleBar.style.display = "block"; // Show the bar
+    } else {
+        collapsibleBar.style.display = "none"; // Hide the bar
+    }
+});
+
+// Function to fetch and parse CSV data
+async function fetchCSVData() {
+    const csvPath = 'crime_data.csv';  // Replace with the actual path to your CSV file
+    const response = await fetch(csvPath);
+    const data = await response.text();
+    return parseCSV(data);
+}
+
+// Function to parse CSV text into an array of rows
+function parseCSV(csv) {
+    const rows = csv.trim().split('\n').map(row => row.split(','));
+    const headers = rows[0];  // First row contains headers
+    return rows.slice(1).map(row => {
+        const obj = {};
+        headers.forEach((header, i) => {
+            obj[header] = row[i];
+        });
+        return obj;
+    });
+}
+
+// Function to export the CSV data
+async function exportCSV() {
+    const data = await fetchCSVData();  // Fetch and parse the CSV data
+
+    // Convert the data back into CSV format
+    const csvContent = convertToCSV(data);
+
+    // Create a Blob with the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    // Create a link element to trigger the download
+    const link = document.createElement('a');
+    if (link.download !== undefined) {  // Ensure the browser supports downloads
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'crime_data.csv');
+        link.style.visibility = 'hidden';  // Make the link invisible
+        document.body.appendChild(link);
+        link.click();  // Trigger the download
+        document.body.removeChild(link);  // Remove the link after download
+    }
+}
+
+// Function to convert data back to CSV format
+function convertToCSV(data) {
+    const headers = Object.keys(data[0]);
+    const rows = data.map(obj => headers.map(header => obj[header]).join(','));
+    return [headers.join(','), ...rows].join('\n');
+}
+
+// Attach event listener to the CSV export button
+document.getElementById('export-csv').addEventListener('click', exportCSV);
+
+
+async function generateTotalCategoryTypeCards(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState) {
+    // Filter data based on selected filters
+    const filteredData = data.filter(row => {
+        const year = parseInt(row.date.split('-')[0], 10);
+        return (
+            (selectedCategory === 'all' || row.category === selectedCategory) &&
+            row.type !== 'all' && // Apply crime type filter here
+            row.state !== 'Malaysia' &&
+            row.district !== 'All' &&
+            year >= startYear && year <= endYear // Apply year filter
+        );
+    });
+
+    // Total crimes
+    const totalCrimes = filteredData
+    .filter(row => 
+        (selectedCrimeType === 'all' || row.type === selectedCrimeType) && 
+        (selectedState === 'Malaysia' || row.state === selectedState) // Apply the state filter here
+    )
+    .reduce((acc, row) => acc + (parseInt(row.crimes, 10) || 0), 0);
+
+    // Crime category counts
+    const categoryCounts = filteredData
+    .filter(row => 
+        (selectedCrimeType === 'all' || row.type === selectedCrimeType) && 
+        (selectedState === 'Malaysia' || row.state === selectedState) // Apply state filter
+    )
+    .reduce((acc, row) => {
+        acc[row.category] = (acc[row.category] || 0) + (parseInt(row.crimes, 10) || 0);
+        return acc;
+    }, {});
+
+    // Find the highest category
+    const highestCategory = Object.entries(categoryCounts).reduce((a, b) => (b[1] > a[1] ? b : a), ['', 0]);
+
+    // Crime type counts (apply selectedCrimeType and selectedState filters)
+    const typeCounts = filteredData
+        .filter(row => 
+            (selectedCrimeType === 'all' || row.type === selectedCrimeType) && 
+            (selectedState === 'Malaysia' || row.state === selectedState) // Apply state filter
+        )
+        .reduce((acc, row) => {
+            acc[row.type] = (acc[row.type] || 0) + (parseInt(row.crimes, 10) || 0);
+            return acc;
+        }, {});
+
+    // Find the highest type of crime
+    const highestType = Object.entries(typeCounts).reduce((a, b) => (b[1] > a[1] ? b : a), ['', 0]);
+
+    // Update the cards
+    document.getElementById('totalCard').innerHTML = `Total Crimes: <span class="card-color-text">${totalCrimes.toLocaleString()}</span>`;
+    document.getElementById('categoryCard').innerHTML = `Highest Crime Category: <span class="card-color-text">${highestCategory[0]} (${highestCategory[1].toLocaleString()})</span>`;
+    document.getElementById('typeCard').innerHTML = `Highest Crime Type: <span class="card-color-text">${highestType[0]} (${highestType[1].toLocaleString()})</span>`;
+
+    // Update image based on the highest crime category
+    const crimeCategoryImage = document.getElementById('crimeCategoryImage');
+    const crimeTypeImage = document.getElementById('crimeTypeImage');
+    
+    if (highestCategory[0] === 'Assault') {
+        crimeCategoryImage.src = 'https://cdn0.iconfinder.com/data/icons/people-lifestyle/100/Hit-01-512.png';
+        if (selectedCrimeType === 'Causing Injury') {
+            crimeTypeImage.src = 'https://cdn4.iconfinder.com/data/icons/negative-character-traits-alphabet-b/241/negative-b015-512.png'; 
+        } else if (selectedCrimeType === 'Murder') {
+            crimeTypeImage.src = 'https://cdn-icons-png.flaticon.com/512/9875/9875127.png'; 
+        } else if (selectedCrimeType === 'Rape') {
+            crimeTypeImage.src = 'https://cdn-icons-png.flaticon.com/512/14240/14240077.png'; 
+        } else if (selectedCrimeType === 'Robbery Gang Armed') {
+            crimeTypeImage.src = 'https://pngimg.com/uploads/gangster/gangster_PNG57.png';
+        } else if (selectedCrimeType === 'Robbery Gang Unarmed') {
+            crimeTypeImage.src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCUaSukYBIQIcY8xlcZ27PNawcEp-QEBKSVNHo4UNFEb7VF7Dwdn-fjAXqp6hOgQvc4Fw&usqp=CAU'; 
+        } else if (selectedCrimeType === 'Robbery Solo Armed') {
+            crimeTypeImage.src = 'https://cdn3.iconfinder.com/data/icons/good-or-bad-neighborhood/120/robber_mugger_armed_masked-512.png'; 
+        } else { //Robbery Solo Unarmed
+            crimeTypeImage.src = 'https://pngimg.com/d/thief_PNG41.png'; 
+        }
+    } else if (highestCategory[0] === 'Property') {
+        crimeCategoryImage.src = 'https://cdn-icons-png.freepik.com/512/634/634755.png';
+        if (selectedCrimeType === 'Break In') {
+            crimeTypeImage.src = 'https://cdn3.iconfinder.com/data/icons/crime-and-criminal-part-1-of-3/344/crime-criminal-008-512.png'; 
+        } else if (selectedCrimeType === 'Theft Other') {
+            crimeTypeImage.src = 'https://cdn-icons-png.flaticon.com/512/39/39854.png'; 
+        } else if (selectedCrimeType === 'Theft Vehicle Lorry') {
+            crimeTypeImage.src = 'https://cdn1.iconfinder.com/data/icons/car-theft/100/all6_2_03_17-512.png'; 
+        } else if (selectedCrimeType === 'Theft Vehicle Motocar') {
+            crimeTypeImage.src = 'https://cdn3.iconfinder.com/data/icons/crime-and-criminal-part-1-of-3/407/crime-criminal-009-512.png';
+        } else { //Theft Vehicle Motorcycle 
+            crimeTypeImage.src = 'https://static.thenounproject.com/png/412496-200.png'; 
+        }
+    } else {
+        crimeCategoryImage.src = 'https://cdn-icons-png.freepik.com/512/634/634755.png'; 
+    }
+}
+
+async function generateStateDistrictCard(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState) {
+    // Filter data for state-level data (only 'all' for type)
+    const stateFilteredData = data.filter(row => {
+        const year = parseInt(row.date.split('-')[0], 10);
+        return (
+            (selectedCategory === 'all' || row.category === selectedCategory) &&
+            (selectedCrimeType !== 'all' || row.type === selectedCrimeType) && // Filter for state-level crime data (no need to filter by type here)
+            row.state !== 'Malaysia' &&
+            row.district !== 'All' &&
+            year >= startYear && year <= endYear // Apply year filter
+        );
+    });
+
+    // Filter data for district-level data (excluding 'all' for type)
+    const districtFilteredData = data.filter(row => {
+        const year = parseInt(row.date.split('-')[0], 10);
+        return (
+            (selectedCategory === 'all' || row.category === selectedCategory) &&
+            row.type !== 'all' && // Only consider non-state-level data
+            (selectedCrimeType === 'all' || row.type === selectedCrimeType) && // Apply crime type filter
+            row.state !== 'Malaysia' &&
+            row.district !== 'All' &&
+            year >= startYear && year <= endYear // Apply year filter
+        );
+    });
+
+    // Aggregate crime counts by state for state-level data
+    const stateCounts = stateFilteredData.reduce((acc, row) => {
+        // Apply crime type filter inside the reduce loop
+        if (selectedCrimeType === 'all' || row.type === selectedCrimeType) {
+            acc[row.state] = (acc[row.state] || 0) + (parseInt(row.crimes, 10) || 0);
+        }
+        return acc;
+    }, {});
+
+
+    // If selectedState is 'all' or 'Malaysia', find the state with the highest crime
+    const stateToFilter = selectedState === 'all' || selectedState === 'Malaysia' ? Object.entries(stateCounts).reduce((a, b) => (b[1] > a[1] ? b : a), ['', 0])[0] : selectedState;
+
+    // Find the state with the highest crime
+    const highestState = stateCounts[stateToFilter] ? [stateToFilter, stateCounts[stateToFilter]] : ['', 0];
+
+    // Aggregate crime counts by district for district-level data, filtered by selected state
+    const districtCounts = districtFilteredData
+        .filter(row => row.state === highestState[0]) // Apply selected state filter
+        .reduce((acc, row) => {
+            acc[row.district] = (acc[row.district] || 0) + (parseInt(row.crimes, 10) || 0);
+            return acc;
+        }, {});
+
+    // Find the district with the highest crime within the selected state
+    const highestDistrict = Object.entries(districtCounts).reduce((a, b) => (b[1] > a[1] ? b : a), ['', 0]);
+
+    // Update the state and district cards
+    document.getElementById('stateCard').innerHTML = `State with Highest Crime: <span class="card-color-text">${highestState[0]} (${highestState[1].toLocaleString()})</span>`;
+    document.getElementById('districtCard').innerHTML = `District with Highest Crime: <span class="card-color-text">${highestDistrict[0]} (${highestDistrict[1].toLocaleString()})</span>`;
+
+    const crimeStateImage = document.getElementById('crimeStateImage');
+
+    switch (selectedState) {
+        case 'Selangor':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=selangor&e=waves';
+            break;
+        case 'W.P. Kuala Lumpur':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=kuala-lumpur&e=waves';
+            break;
+        case 'Pulau Pinang':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=penang&e=waves';
+            break;
+        case 'Johor':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=johor&e=waves';
+            break;
+        case 'Perak':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=perak&e=waves';
+            break;
+        case 'Negeri Sembilan':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=negeri-sembilan&e=waves';
+            break;
+        case 'Melaka':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=melaka&e=waves';
+            break;
+        case 'Kedah':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=kelantan&e=waves';
+            break;
+        case 'Kelantan':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=kelantan&e=waves';
+            break;
+        case 'Terengganu':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=terengganu&e=waves';
+            break;
+        case 'Pahang':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=pahang&e=waves';
+            break;
+        case 'Perlis':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=perlis&e=waves';
+            break;
+        case 'Sarawak':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=sarawak&e=waves';
+            break;
+        case 'Sabah':
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=sabah&e=waves';
+            break;
+        default:
+            crimeStateImage.src = 'https://www.flagcolorcodes.com/filter?f=selangor&e=waves'; 
+            break;
+    }
+}
+
+function generateTop5BarChart(data, startYear, endYear, selectedCategory, selectedCrimeType) {
+    // Filter the data based on selected filters
+    const filteredData = data.filter(row => 
+        (selectedCategory === 'all' || row.category === selectedCategory) &&  
+        (selectedCrimeType !== 'all' || row.type === selectedCrimeType) &&  
+        row.state !== 'Malaysia' && 
+        row.district !== 'All' 
+    );
+
+    // Further filter the data based on the year range
+    const yearFilteredData = filteredData.filter(row => {
+        const year = parseInt(row.date.split('-')[0], 10);
+        return year >= startYear && year <= endYear;
+    });
+
+    // Initialize crime data for all states with 0 crimes
+    const crimeCountsByState = yearFilteredData.reduce((acc, row) => {
+        const state = row.state;
+        const crimes = parseInt(row.crimes, 10) || 0;
+        
+        // Only aggregate crimes for the selected crime type (if applicable)
+        if (selectedCrimeType === 'all' || row.type === selectedCrimeType) {
+            acc[state] = (acc[state] || 0) + crimes;  // Aggregate crimes by state
+        }
+        return acc;
+    }, {});
+
+    // Get the total number of crimes across all states for density calculation
+    const totalCrimes = Object.values(crimeCountsByState).reduce((sum, crimes) => sum + crimes, 0);
+
+    // Prepare the crime counts array for the top 5 states
+    const crimeCountsArray = Object.entries(crimeCountsByState)
+        .map(([state, totalCrimes]) => ({
+            state,
+            totalCrimes,
+            crimeDensity: totalCrimes / totalCrimes // You can change this formula based on how you want to calculate density
+        }));
+
+    // Sort and get the top 5 states based on total crimes
+    crimeCountsArray.sort((a, b) => b.totalCrimes - a.totalCrimes);  // Sort by total crimes in descending order
+
+    const top5States = crimeCountsArray.slice(0, 6);  // Get the top 5 states
+    
+    // Define the state images
+    const stateImages = {
+        'Johor': 'https://www.flagcolorcodes.com/filter?f=johor&e=waves',
+        'Kedah': 'https://www.flagcolorcodes.com/filter?f=kedah&e=waves',
+        'Kelantan': 'https://www.flagcolorcodes.com/filter?f=kelantan&e=waves',
+        'Melaka': 'https://www.flagcolorcodes.com/filter?f=melaka&e=waves',
+        'Negeri Sembilan': 'https://www.flagcolorcodes.com/filter?f=negeri-sembilan&e=waves',
+        'Pahang': 'https://www.flagcolorcodes.com/filter?f=pahang&e=waves',
+        'Pulau Pinang': 'https://www.flagcolorcodes.com/filter?f=penang&e=waves',
+        'Perak': 'https://www.flagcolorcodes.com/filter?f=perak&e=waves',
+        'Perlis': 'https://www.flagcolorcodes.com/filter?f=perlis&e=waves',
+        'Sabah': 'https://www.flagcolorcodes.com/filter?f=sabah&e=waves',
+        'Sarawak': 'https://www.flagcolorcodes.com/filter?f=sarawak&e=waves',
+        'Selangor': 'https://www.flagcolorcodes.com/filter?f=selangor&e=waves',
+        'Terengganu': 'https://www.flagcolorcodes.com/filter?f=terengganu&e=waves',
+        'W.P. Kuala Lumpur': 'https://www.flagcolorcodes.com/filter?f=kuala-lumpur&e=waves'
+    };
+
+    // Generate the bar chart using Highcharts
+    Highcharts.chart('crimeTop5BarChart', {
+        chart: { 
+            type: 'bar',
+            marginBottom: 28,
+            backgroundColor: '#F0F0F0'
+        },
+        title: { 
+            text: (selectedCategory === 'all' && selectedCrimeType === 'all')
+                ? (startYear && endYear 
+                    ? `Top 5 States with Highest Crime (${startYear} - ${endYear})`
+                    : `Top 5 States with Highest Crime (All Categories and Types)`)
+                : (selectedCategory === 'all')
+                    ? (startYear && endYear 
+                        ? `Top 5 States with Highest Crime (${startYear} - ${endYear}) (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                        : `Top 5 States with Highest Crime (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+                    : (selectedCrimeType === 'all')
+                        ? (startYear && endYear 
+                            ? `Top 5 States with Highest Crime (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`
+                            : `Top 5 States with Highest Crime (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`)
+                        : (startYear && endYear 
+                            ? `Top 5 States with Highest Crime (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                            : `Top 5 States with Highest Crime (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+        },
+        xAxis: {
+            categories: top5States.map(item => item.state),  // State names on x-axis
+            title: { 
+                text: 'State' 
+            },
+            labels: {
+                style: {
+                    fontSize: '10px', // Smaller font size
+                    fontFamily: 'Arial, sans-serif', // Font family
+                }
+            }
+        },
+        yAxis: {
+            enabled: false,
+            title: { 
+                text: 'Number of Crimes' 
+            }
+        },
+        exporting: {
+            enabled: true
+        },
+        series: [{
+            name: 'Crimes',
+            data: top5States.map(item => {
+                return {
+                    y: item.totalCrimes,  // Total crimes for each state
+                    color: getBarColor(selectedCategory, item.crimeDensity)  // Set color based on crime density and category
+                };
+            }),
+            dataLabels: {
+                enabled: true,
+                formatter: function() {
+                    const state = this.point.category;
+                    const imageUrl = stateImages[state];
+                    return `<img src="${imageUrl}" width="30" height="20">`;
+                },
+                useHTML: true
+            }
+        }],
+        tooltip: {
+            useHTML: true,
+            followPointer: true
+        },
+        legend : {
+            enabled: false
+        }
+    });
+}
+
+// Function to generate the line chart with Highcharts
+function generateLineChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState) {
+    // Filter the data for Malaysia or the selected state
+    const filteredData = data.filter(row => 
+        row.state === selectedState &&
+        row.type === selectedCrimeType &&
+        row.district === 'All'
+    );
+
+    const stateFilteredData = selectedState === 'Malaysia'
+        ? filteredData
+        : filteredData.filter(row => row.state === selectedState);
+
+    // Further filter the data based on the selected crime category
+    const categoryFilteredData = selectedCategory === 'all' 
+        ? stateFilteredData 
+        : stateFilteredData.filter(row => row.category === selectedCategory);
+
+    // Further filter the data based on the selected crime type
+    const typeFilteredData = selectedCrimeType === 'all'
+        ? categoryFilteredData
+        : categoryFilteredData.filter(row => row.type === selectedCrimeType);
+
+    // Further filter the data based on the year range
+    const yearFilteredData = typeFilteredData.filter(row => {
+        const year = parseInt(row.date.split('-')[0], 10);
+        return year >= startYear && year <= endYear;
+    });
+
+    // Get the unique years in the filtered data
+    const years = [...new Set(yearFilteredData.map(row => row.date.split('-')[0]))];
+
+    // Calculate the total crimes for each year
+    const crimeCountsPerYear = years.map(year => {
+        const yearData = yearFilteredData.filter(row => row.date.split('-')[0] === year);
+        const totalCrimes = yearData.reduce((sum, row) => sum + parseInt(row.crimes, 10), 0);
+
+        return totalCrimes;
+    });
+
+    // Colors for each category
+    const categoryColors = {
+        Assault: '#9F57A4', 
+        Property: '#B42955', 
+        all: '#FF5722' 
+    };
+
+    // Generate the line chart using Highcharts
+    Highcharts.chart('crimeLineChart', {
+        chart: { type: 'line' },
+        title: { 
+            text: (selectedCategory === 'all' && selectedCrimeType === 'all')
+                ? (startYear && endYear 
+                    ? `Crime Trend Over the Years for ${selectedState} (${startYear} - ${endYear})`
+                    : `Crime Trend Over the Years for ${selectedState} (All Categories and Types)`)
+                : (selectedCategory === 'all')
+                    ? (startYear && endYear 
+                        ? `Crime Trend Over the Years for ${selectedState} (${startYear} - ${endYear}) (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                        : `Crime Trend Over the Years for ${selectedState} (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+                    : (selectedCrimeType === 'all')
+                        ? (startYear && endYear 
+                            ? `Crime Trend Over the Years for ${selectedState} (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`
+                            : `Crime Trend Over the Years for ${selectedState} (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`)
+                        : (startYear && endYear 
+                            ? `Crime Trend Over the Years for ${selectedState} (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                            : `Crime Trend Over the Years for ${selectedState} (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+        },
+        exporting: {
+            buttons: {
+                contextButton: {
+                    enabled: true,
+                    theme: {
+                        fill: '#F0F0F0' // Replace with your desired color (e.g., '#333')
+                    }
+                }
+            }
+        },
+        xAxis: { categories: years, title: { text: 'Year' } },
+        yAxis: { title: { text: 'Number of Crimes' }, min: 0 },
+        legend: {
+            enabled: false
+        },
+        series: [{
+            name: selectedCrimeType === 'all'
+                ? `Number of Crimes (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}) in ${selectedState}`
+                : `Number of Crimes (${selectedCrimeType}) in ${selectedState}`,
+            data: crimeCountsPerYear,
+            color: categoryColors[selectedCategory], // Use the respective color based on category
+            lineWidth: 2
+        }],
+        responsive: {
+            rules: [{
+                condition: { maxWidth: 500 },
+                chartOptions: { legend: { enabled: false } }
+            }]
+        },
+    });
+}
+
+
+function generateMultilevelDonutChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState) {
+    // Filter the data based on the selected state and category
+    const filteredData = data.filter(row => 
+        row.state === selectedState &&  // Apply state filter
+        row.type !== 'all' &&  // Ensure we're not looking at 'all' type of crime
+        (row.category === selectedCategory || selectedCategory === 'all') &&
+        row.district === 'All'  
+    );
+
+    const stateFilteredData = selectedState === 'Malaysia'
+        ? filteredData
+        : filteredData.filter(row => row.state === selectedState);
+
+    // Further filter the data based on the selected crime category
+    const categoryFilteredData = selectedCategory === 'all' 
+        ? filteredData 
+        : filteredData.filter(row => row.category === selectedCategory);
+
+    // Further filter the data based on the selected crime type
+    const typeFilteredData = selectedCrimeType === 'all'
+        ? categoryFilteredData
+        : categoryFilteredData.filter(row => row.type === selectedCrimeType);
+
+    // Further filter the data based on the year range
+    const yearFilteredData = filteredData.filter(row => {
+        const year = parseInt(row.date.split('-')[0], 10);
+        return year >= startYear && year <= endYear;
+    });
+
+    // Calculate total crimes by category and type
+    const crimeCountsByCategoryAndType = yearFilteredData.reduce((acc, row) => {
+        const { category, type, crimes } = row;
+        acc[category] = acc[category] || { total: 0, types: {} };
+        acc[category].total += parseInt(crimes, 10);
+        acc[category].types[type] = (acc[category].types[type] || 0) + parseInt(crimes, 10);
+        return acc;
+    }, {});
+
+    // Prepare data for the donut chart
+    const categoriesData = [];
+    const typesData = [];
+
+    // Function to generate the gradient color based on the parent's total crimes
+    function getParentGradientColor(parentCategory, count, totalCrimes) {
+        // Normalize the count between 0 and 1 based on parent's total crimes
+        const normalized = count / totalCrimes;
+
+        // Define more contrasting color gradients for each category (lighter -> darker)
+        const categoryColors = {
+            Assault: { start: '#9F57A4', end: '#D184D1' }, // Gradient from light purple to fixed Assault color
+            Property: { start: '#B42955', end: '#E76D89' } // Gradient from light pink to fixed Property color
+        };
+
+        const { start, end } = categoryColors[parentCategory];
+
+        // Interpolate between the start and end colors for the gradient
+        const startColor = hexToRgb(start);
+        const endColor = hexToRgb(end);
+
+        const r = Math.round(startColor.r + (1 - normalized) * (endColor.r - startColor.r));  // Reversed interpolation
+        const g = Math.round(startColor.g + (1 - normalized) * (endColor.g - startColor.g));
+        const b = Math.round(startColor.b + (1 - normalized) * (endColor.b - startColor.b));
+
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    // Convert hex color to RGB
+    function hexToRgb(hex) {
+        const match = /^#([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})$/i.exec(hex);
+        return match ? {
+            r: parseInt(match[1], 16),
+            g: parseInt(match[2], 16),
+            b: parseInt(match[3], 16)
+        } : null;
+    }
+
+    Object.entries(crimeCountsByCategoryAndType).forEach(([category, data]) => {
+        // Add the main category data for the outer ring
+        categoriesData.push({
+            name: category.charAt(0).toUpperCase() + category.slice(1),
+            y: data.total,
+            color: category === 'Assault' ? '#9F57A4' : '#B42955' // Base category color
+        });
+
+        // If no specific crime type is selected, show all types under the category
+        if (selectedCrimeType === 'all') {
+            // Add the crime types under this category for the inner ring
+            Object.entries(data.types).forEach(([type, count]) => {
+                const gradientColor = getParentGradientColor(category, count, data.total);
+
+                typesData.push({
+                    name: `${type.charAt(0).toUpperCase() + type.slice(1)}`,
+                    y: count,
+                    parent: category.charAt(0).toUpperCase() + category.slice(1), // Link to parent category
+                    color: gradientColor // Set the gradient color for the type
+                });
+            });
+        } else {
+            // If a specific crime type is selected, only show that type for the category
+            if (data.types[selectedCrimeType]) {
+                const count = data.types[selectedCrimeType];
+                const gradientColor = getParentGradientColor(category, count, data.total);
+
+                typesData.push({
+                    name: `${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)} (${category})`,
+                    y: count,
+                    parent: category.charAt(0).toUpperCase() + category.slice(1), // Link to parent category
+                    color: gradientColor // Set the gradient color for the type
+                });
+            }
+        }
+    });
+
+
+    // Generate the multilevel donut chart using Highcharts
+    Highcharts.chart('crimeDonutChart', {
+        chart: {
+            type: 'pie'
+        },
+        title: { 
+            text: (selectedCategory === 'all' && selectedCrimeType === 'all')
+                ? (startYear && endYear 
+                    ? `Crime Category and Type Distribution for ${selectedState} (${startYear} - ${endYear})`
+                    : `Crime Category and Type Distribution for ${selectedState} (All Categories and Types)`)
+                : (selectedCategory === 'all')
+                    ? (startYear && endYear 
+                        ? `Crime Category and Type Distribution for ${selectedState} (${startYear} - ${endYear}) (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                        : `Crime Category and Type Distribution for ${selectedState} (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+                    : (selectedCrimeType === 'all')
+                        ? (startYear && endYear 
+                            ? `Crime Category and Type Distribution for ${selectedState} (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`
+                            : `Crime Category and Type Distribution for ${selectedState} (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`)
+                        : (startYear && endYear 
+                            ? `Crime Category and Type Distribution for ${selectedState} (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                            : `Crime Category and Type Distribution for ${selectedState} (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+        },
+        exporting: {
+            buttons: {
+                contextButton: {
+                    theme: {
+                        enabled: true,
+                        fill: '#F0F0F0' // Replace with your desired color (e.g., '#333')
+                    }
+                }
+            }
+        },
+        plotOptions: {
+            pie: {
+                innerSize: '30%', // Multi-level chart
+                depth: 45,
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f}%' // Show name and percentage
+                }
+            }
+        },
+        series: [
+            {
+                name: 'Crime Categories',
+                data: categoriesData, // Outer ring data (categories)
+                size: '60%' // Adjust the size of the outer ring
+            },
+            {
+                name: 'Crime Types',
+                data: typesData, // Inner ring data (types)
+                size: '80%', // Adjust the size of the inner ring
+                innerSize: '60%' // Inner ring size to create the donut effect
+            }
+        ],
+        responsive: {
+            rules: [{
+                condition: { maxWidth: 500 },
+                chartOptions: { legend: { enabled: false } }
+            }]
+        }
+    });
+}
+
+// Function to generate the stacked bar chart with Highcharts
+function generateStackedBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState) {
+    // Filter the data for Malaysia, and only category Assault or Property
+    const filteredData = data.filter(row => 
+        row.state === selectedState &&
+        (selectedCrimeType === 'all' || row.type === selectedCrimeType) &&  // Ensure we're looking at the 'all' type of crime
+        (row.category === 'Assault' || row.category === 'Property') &&
+        row.district === 'All'  
+    );
+
+    const stateFilteredData = selectedState === 'Malaysia'
+        ? filteredData
+        : filteredData.filter(row => row.state === selectedState);
+
+    // Further filter the data based on the selected crime category (either Assault or Property)
+    const categoryFilteredData = selectedCategory === 'all'
+        ? filteredData
+        : filteredData.filter(row => row.category === selectedCategory);
+
+    // Further filter the data based on the selected crime type
+    const typeFilteredData = selectedCrimeType === 'all'
+        ? categoryFilteredData
+        : categoryFilteredData.filter(row => row.type === selectedCrimeType);
+
+    // Further filter the data based on the year range
+    const yearFilteredData = filteredData.filter(row => {
+        const year = parseInt(row.date.split('-')[0], 10);
+        return year >= startYear && year <= endYear;
+    });
+
+    // Get the unique years in the filtered data
+    const years = [...new Set(yearFilteredData.map(row => row.date.split('-')[0]))];
+
+    // Get the unique crime categories (should be Assault and Property or filtered category)
+    const crimeCategories = selectedCategory === 'all' ? ['Assault', 'Property'] : [selectedCategory];
+
+    // Create the dataset for the stacked bar chart
+    const datasets = crimeCategories.map(category => {
+        const categoryData = years.map(year => {
+            return yearFilteredData.filter(row => row.date.split('-')[0] === year && row.category === category)
+                                    .reduce((sum, row) => sum + parseInt(row.crimes, 10), 0);
+        });
+        return {
+            name: category,
+            data: categoryData,
+            color: category === 'Assault' ? '#9F57A4' : '#B42955'
+        };
+    });
+
+    // Generate the stacked bar chart using Highcharts
+    Highcharts.chart('crimeStackedBarChart', {
+        chart: { 
+            type: 'bar',
+            marginBottom: 37
+        },
+        title: { 
+            text: (selectedCategory === 'all' && selectedCrimeType === 'all')
+                ? (startYear && endYear 
+                    ? `Crime Data by Category for ${selectedState} (${startYear} - ${endYear})`
+                    : `Crime Data by Category for ${selectedState} (All Categories and Types)`)
+                : (selectedCategory === 'all')
+                    ? (startYear && endYear 
+                        ? `Crime Data by Category for ${selectedState} (${startYear} - ${endYear}) (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                        : `Crime Data by Category for ${selectedState} (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+                    : (selectedCrimeType === 'all')
+                        ? (startYear && endYear 
+                            ? `Crime Data by Category for ${selectedState} (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`
+                            : `Crime Data by Category for ${selectedState} (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`)
+                        : (startYear && endYear 
+                            ? `Crime Data by Category for ${selectedState} (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                            : `Crime Data by Category for ${selectedState} (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+        },
+        exporting: {
+            buttons: {
+                contextButton: {
+                    theme: {
+                        enabled: true,
+                        fill: '#F0F0F0' // Replace with your desired color (e.g., '#333')
+                    }
+                }
+            }
+        },
+        xAxis: { categories: years, title: { text: 'Year' } },
+        yAxis: { 
+            title: { text: 'Number of Crimes' },
+            stackLabels: { enabled: true }  // Show stack labels on top of bars
+        },
+        series: datasets,
+        plotOptions: {
+            bar: {
+                stacking: 'normal'  // Enable normal stacking for the bars
+            }
+        },
+        responsive: {
+            rules: [{
+                condition: { maxWidth: 500 },
+                chartOptions: { legend: { enabled: false } }
+            }]
+        }
+    });
+}
+
+// Helper function to calculate gradient color based on crime density
+function getGradientColor(crimeDensity) {
+    if (crimeDensity < 0.3) {
+        return '#FFB300';
+    } else if (crimeDensity < 0.6) {
+        return '#FF7043';
+    } else {
+        return '#D32F2F';
+    }
+}
+
+// Mapping for states to region keys in Highcharts
+const stateToRegionKey = {
+    'Johor': 'my-jh',
+    'Kedah': 'my-kh',
+    'Kelantan': 'my-kn',
+    'Melaka': 'my-me',
+    'Negeri Sembilan': 'my-ns',
+    'Pahang': 'my-ph',
+    'Pulau Pinang': 'my-pg',
+    'Perak': 'my-pk',
+    'Perlis': 'my-pl',
+    'Selangor': 'my-sl',
+    'Terengganu': 'my-te',
+    'Sabah': 'my-sa',
+    'Sarawak': 'my-sk',
+    'W.P. Kuala Lumpur': 'my-kl',
+    'W.P. Labuan': 'my-la',
+    'W.P. Putrajaya': 'my-pj'
+};
+
+// Function to generate the crime map with Highcharts
+function generateMapChart(data, startYear, endYear, selectedCategory, selectedCrimeType) {
+    // Filter the data to match the desired categories, types, and years
+    const filteredData = data.filter(row => 
+        (selectedCategory === 'all' || row.category === selectedCategory) &&
+        (selectedCrimeType !== 'all' || row.type === selectedCrimeType) &&  
+        row.state !== 'Malaysia' &&
+        row.district !== 'All'
+    );
+
+    // Further filter the data based on the year range
+    const yearFilteredData = filteredData.filter(row => {
+        const year = parseInt(row.date.split('-')[0], 10);
+        return year >= startYear && year <= endYear;
+    });
+
+    // Initialize crime data for all states with 0 crimes
+    const crimeByState = Object.keys(stateToRegionKey).reduce((acc, state) => {
+        const regionKey = stateToRegionKey[state];
+        acc[regionKey] = 0;
+        return acc;
+    }, {});
+
+    // Aggregate crime data by state
+    yearFilteredData.forEach(row => {
+        const state = row.state;
+        const crimes = parseInt(row.crimes, 10) || 0;
+        const regionKey = stateToRegionKey[state];
+
+        if (selectedCrimeType === 'all' || row.type === selectedCrimeType) {
+            if (regionKey) {
+                crimeByState[regionKey] += crimes; // Add to the respective state/region
+            } else {
+                console.warn('Unmapped State:', state);
+            }
+        }
+    });
+
+    // Get the maximum number of crimes for color scaling
+    const maxCrimes = Math.max(...Object.values(crimeByState), 1);
+
+    // Prepare map data for Highcharts
+    const mapData = Object.keys(crimeByState).map(regionKey => {
+        const crimeDensity = crimeByState[regionKey] / maxCrimes;
+        return {
+            'hc-key': regionKey,
+            value: crimeByState[regionKey],
+            color: getBarColor(selectedCategory, crimeDensity)
+        };
+    });
+
+    let colorStops;
+
+    if (selectedCategory === 'Assault') {
+        colorStops = [
+            [0, '#F8E6F8'], // Light purple (Low crime areas)
+            [0.5, '#D184D1'], // Medium purple (Medium crime areas)
+            [1, '#9F57A4']   // Deep purple (High crime areas)
+        ];
+    } else if (selectedCategory === 'Property') {
+        colorStops = [
+            [0, '#FDE6EA'], // Light pink (Low crime areas)
+            [0.5, '#E76D89'], // Medium pink (Medium crime areas)
+            [1, '#B42955']   // Deep pink (High crime areas)
+        ];
+    } else {
+        colorStops = [
+            [0, '#FFB300'],  // Light yellow (Low crime areas)
+            [0.5, '#FF7043'], // Warm orange (Medium crime areas)
+            [1, '#D32F2F']    // Deep red (High crime areas)
+        ];
+    }
+
+    // Generate the Highcharts map without drilldown
+    Highcharts.mapChart('crimeMapChart', {
+        chart: {
+            map: 'countries/my/my-all',
+            backgroundColor: '#F0F0F0'
+        },
+        title: { 
+            text: (selectedCategory === 'all' && selectedCrimeType === 'all')
+                ? (startYear && endYear 
+                    ? `Crime Data by States for Malaysia (${startYear} - ${endYear})`
+                    : `Crime Data by States for Malaysia (All Categories and Types)`)
+                : (selectedCategory === 'all')
+                    ? (startYear && endYear 
+                        ? `Crime Data by States for Malaysia (${startYear} - ${endYear}) (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                        : `Crime Data by States for Malaysia (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+                    : (selectedCrimeType === 'all')
+                        ? (startYear && endYear 
+                            ? `Crime Data by States for Malaysia (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`
+                            : `Crime Data by States for Malaysia (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`)
+                        : (startYear && endYear 
+                            ? `Crime Data by States for Malaysia (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                            : `Crime Data by States for Malaysia (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+        },
+        colorAxis: {
+            min: 0,
+            max: maxCrimes, // Maximum crime value for scaling
+            stops: colorStops,
+            layout: 'horizontal', // Position the color axis vertically
+            width: 140,  
+            height: 10,        // Make the color axis narrower
+            padding: 3,         // Add some padding around the color axis
+            labels: {
+                style: {
+                    fontSize: '10px' // Smaller font for labels
+                }
+            }
+        },
+        exporting: {
+            enabled: true
+        },
+        mapNavigation: {
+            enabled: true,
+            enableMouseWheelZoom: true
+        },
+        labels:{
+            enabled: true
+        },
+        series: [{
+            name: 'Crime Rate',
+            data: mapData,
+            joinBy: ['hc-key', 'hc-key'],
+            dataLabels: {
+                enabled: true, // Enable data labels
+                format: '{point.name}', // Display the state name
+            },
+            states: {
+                hover: {
+                    animation: {
+                        duration: 300 // Smooth hover animation
+                    }
+                }
+            },
+            tooltip: {
+                followPointer: true,
+                animation: true,
+                pointFormat: '{point.name}: {point.value} crimes'
+            },
+            events: {
+                click: function (event) {
+                    const clickedState = event.point.name;  // The name of the clicked state
+                    openModal(clickedState);  // Open the modal for the clicked state
+                }
+            }
+        }]
+    });
+}
+
+
+
+// Function to determine the bar color based on the selected category or gradient
+function getBarColor(selectedCategory, crimeDensity) {
+    const categoryGradients = {
+        Assault: { start: '#F4D8F9', end: '#9F57A4' }, // Gradient from light purple to fixed Assault color
+        Property: { start: '#FBD3DA', end: '#B42955' } // Gradient from light pink to fixed Property color
+    };
+
+    if (selectedCategory === 'Assault' || selectedCategory === 'Property') {
+        // Get gradient colors for the selected category
+        const { start, end } = categoryGradients[selectedCategory];
+
+        // Interpolate gradient based on crime density
+        const startColor = hexToRgb(start);
+        const endColor = hexToRgb(end);
+
+        const r = Math.round(startColor.r + crimeDensity * (endColor.r - startColor.r));
+        const g = Math.round(startColor.g + crimeDensity * (endColor.g - startColor.g));
+        const b = Math.round(startColor.b + crimeDensity * (endColor.b - startColor.b));
+
+        return `rgb(${r}, ${g}, ${b})`;
+    } else {
+        // For other categories or "all", fallback to a general gradient logic
+        return getGradientColor(crimeDensity);
+    }
+}
+
+function hexToRgb(hex) {
+    const match = /^#([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})$/i.exec(hex);
+    return match ? {
+        r: parseInt(match[1], 16),
+        g: parseInt(match[2], 16),
+        b: parseInt(match[3], 16)
+    } : null;
+}
+
+
+// Function to generate the drilldown stacked bar chart with gradient color for states and districts
+function generateDrilldownBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType) {
+    // Filter the data for the selected crime category (either 'Assault', 'Property', or 'all')
+    const filteredData = data.filter(row => 
+        (selectedCategory === 'all' || row.category === selectedCategory) && // Filter based on selected category
+        (selectedCrimeType !== 'all' || row.type === selectedCrimeType) &&  // Ensure we're looking at the 'all' type of crime
+        row.state !== 'Malaysia' && // Exclude data for Malaysia
+        row.district !== 'All' // Exclude data where district is "All"
+    );
+
+    // Further filter the data based on the year range
+    const yearFilteredData = filteredData.filter(row => {
+        const year = parseInt(row.date.split('-')[0], 10);
+        return year >= startYear && year <= endYear;
+    });
+
+    // Get the unique states from the filtered data
+    const states = [...new Set(yearFilteredData.map(row => row.state))];
+
+    // Calculate the total number of crimes for each state
+    const totalCrimesPerState = states.map(state => {
+        const stateData = yearFilteredData.filter(row => row.state === state);
+        // Only sum crimes based on the selected crime type
+        const filteredStateData = stateData.filter(row => 
+            selectedCrimeType === 'all' || row.type === selectedCrimeType
+        );
+        const totalCrimes = filteredStateData.reduce((sum, row) => sum + parseInt(row.crimes, 10), 0);
+        return { state, totalCrimes };
+    });
+
+
+    // Get the maximum number of crimes for color scaling
+    const maxCrimes = Math.max(...totalCrimesPerState.map(item => item.totalCrimes));
+
+    // Create the main series for the states with gradient coloring based on crime totals
+    const datasets = totalCrimesPerState.map(item => {
+        const crimeDensity = item.totalCrimes / maxCrimes;  // Normalize crime value for gradient color
+        return {
+            name: item.state,
+            y: item.totalCrimes,
+            drilldown: item.state,  // Link to the drilldown data for that state
+            color: getBarColor(selectedCategory, crimeDensity)  // Apply the gradient color based on crime density
+        };
+    });
+
+    // Create the drilldown data for each state and its districts with gradient color
+    const drilldownData = states.map(state => {
+        const stateData = yearFilteredData.filter(row => row.state === state);
+        const districts = [...new Set(stateData.map(row => row.district))]; // Get unique districts for the state
+
+        const districtData = districts.map(district => {
+            const assaultData = stateData.filter(row => row.district === district && selectedCategory === 'Assault' && (selectedCrimeType === 'all' || row.type === selectedCrimeType));
+            const propertyData = stateData.filter(row => row.district === district && selectedCategory === 'Property' && (selectedCrimeType === 'all' || row.type === selectedCrimeType));
+            const allData = stateData.filter(row => row.district === district && (selectedCategory === 'all' || row.category === selectedCategory) && (selectedCrimeType === 'all' || row.type === selectedCrimeType));
+            
+            // Calculate the crime density for 'all' category
+            const crimeDensity = allData.reduce((sum, row) => sum + parseInt(row.crimes, 10), 0) / Math.max(...stateData.map(row => parseInt(row.crimes, 10))); // Normalize against the max value
+
+            return [
+                {
+                    name: district,  // Label for Assault
+                    y: assaultData.reduce((sum, row) => sum + parseInt(row.crimes, 10), 0),
+                    color: getBarColor(selectedCategory, crimeDensity)
+                },
+                {
+                    name: district,  // Label for Property
+                    y: propertyData.reduce((sum, row) => sum + parseInt(row.crimes, 10), 0),
+                    color: getBarColor(selectedCategory, crimeDensity)
+                },
+                {
+                    name: district,  // Label for 'All'
+                    y: allData.reduce((sum, row) => sum + parseInt(row.crimes, 10), 0),
+                    color: getBarColor(selectedCategory, crimeDensity)
+                }
+            ];
+        }).flat(); // Flatten the array to include both Assault and Property, plus 'all'
+
+        return {
+            id: state, // Drilldown ID matches the `drilldown` field in the main series
+            data: districtData,
+            name: `${state} by District`
+        };
+    });
+
+
+    // Generate the Highcharts drilldown bar chart
+    Highcharts.chart('crimeDrilldownBarChart', {
+        chart: {
+            type: 'column',
+            marginBottom: 40,
+            backgroundColor: '#F0F0F0'
+        },
+        title: { 
+            text: (selectedCategory === 'all' && selectedCrimeType === 'all')
+                ? (startYear && endYear 
+                    ? `Crime Data by State and District (${startYear} - ${endYear})`
+                    : `Crime Data by State and District (All Categories and Types)`)
+                : (selectedCategory === 'all')
+                    ? (startYear && endYear 
+                        ? `Crime Data by State and District (${startYear} - ${endYear}) (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                        : `Crime Data by State and District (${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+                    : (selectedCrimeType === 'all')
+                        ? (startYear && endYear 
+                            ? `Crime Data by State and District (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`
+                            : `Crime Data by State and District (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)})`)
+                        : (startYear && endYear 
+                            ? `Crime Data by State and District (${startYear} - ${endYear}) (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`
+                            : `Crime Data by State and District (${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}, ${selectedCrimeType.charAt(0).toUpperCase() + selectedCrimeType.slice(1)})`)
+        },
+        xAxis: {
+            type: 'category',
+        
+            labels: {
+                rotation: 0, // Keep labels horizontal
+                style: {
+                    fontSize: '12px',
+                    fontFamily: 'Arial, sans-serif'
+                }
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Number of Crimes'
+            }
+        },
+        exporting: {
+            enabled: true
+        },
+        series: [{
+            name: 'States',
+            colorByPoint: true,
+            data: datasets
+        }],
+        drilldown: {
+            series: drilldownData
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.3,
+                borderWidth: 0,  // Removing the border width around bars
+                borderRadius: 0, // Ensuring no radius is applied to the bars
+            }
+        },
+        legend: {
+            enabled: false
+        }
+    });
+}
+
+// Event listener for year range slider change
+document.getElementById('yearRangeStart').addEventListener('input', function() {
+    const startYear = this.value;
+    document.getElementById('startYearLabel').textContent = startYear;
+    const endYear = document.getElementById('yearRangeEnd').value;
+    const selectedCategory = document.getElementById('crimeCategory').value; 
+    const selectedCrimeType = document.getElementById('crimeType').value; 
+    const selectedState = document.getElementById('crimeState').value;
+    fetchCSVData().then(data => {
+        generateTotalCategoryTypeCards(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStateDistrictCard(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateLineChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMultilevelDonutChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStackedBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMapChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateDrilldownBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateTop5BarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+    }).catch(error => {
+        console.error('Error fetching data:', error);
+    });
+});
+
+document.getElementById('yearRangeEnd').addEventListener('input', function() {
+    const endYear = this.value;
+    document.getElementById('endYearLabel').textContent = endYear;
+    const startYear = document.getElementById('yearRangeStart').value;
+    const selectedCategory = document.getElementById('crimeCategory').value; 
+    const selectedCrimeType = document.getElementById('crimeType').value; 
+    const selectedState = document.getElementById('crimeState').value;
+    fetchCSVData().then(data => {
+        generateTotalCategoryTypeCards(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStateDistrictCard(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateLineChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMultilevelDonutChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStackedBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMapChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateDrilldownBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateTop5BarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+    }).catch(error => {
+        console.error('Error fetching data:', error);
+    });
+});
+
+document.getElementById('crimeCategory').addEventListener('change', function() {
+    const selectedCategory = this.value; // Get the selected category from the dropdown
+    const startYear = document.getElementById('yearRangeStart').value;
+    const endYear = document.getElementById('yearRangeEnd').value;
+    const selectedCrimeType = document.getElementById('crimeType').value;
+    const selectedState = document.getElementById('crimeState').value; // Get the selected state
+    fetchCSVData().then(data => {
+        generateTotalCategoryTypeCards(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStateDistrictCard(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateLineChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMultilevelDonutChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStackedBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMapChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateDrilldownBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateTop5BarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+    }).catch(error => {
+        console.error('Error fetching data:', error);
+    });
+});
+
+document.getElementById('crimeType').addEventListener('change', function () {
+    const selectedCrimeType = this.value; // Get the selected crime type from the dropdown
+    const selectedCategory = document.getElementById('crimeCategory').value;
+    const startYear = parseInt(document.getElementById('yearRangeStart').value, 10);
+    const endYear = parseInt(document.getElementById('yearRangeEnd').value, 10);
+    const selectedState = document.getElementById('crimeState').value; // Ensure selectedState is set here too
+    fetchCSVData().then(data => {
+        generateTotalCategoryTypeCards(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStateDistrictCard(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateLineChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMultilevelDonutChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStackedBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMapChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateDrilldownBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateTop5BarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+    }).catch(error => {
+        console.error('Error fetching data:', error);
+    });
+});
+
+
+document.getElementById('crimeState').addEventListener('change', function () {
+    const selectedState = this.value;
+    const selectedCategory = document.getElementById('crimeCategory').value;
+    const startYear = parseInt(document.getElementById('yearRangeStart').value, 10);
+    const selectedCrimeType = document.getElementById('crimeType').value;
+    const endYear = parseInt(document.getElementById('yearRangeEnd').value, 10);
+    fetchCSVData().then(data => {
+        generateTotalCategoryTypeCards(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStateDistrictCard(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateLineChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMultilevelDonutChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStackedBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+    }).catch(error => {
+        console.error('Error fetching data:', error);
+    });
+});
+
+
+// Fetch data and generate charts initially
+fetchCSVData().then(data => {
+    generateTotalCategoryTypeCards(data, 2016, 2023, 'all', 'all', 'Malaysia');
+    generateStateDistrictCard(data, 2016, 2023, 'all', 'all', 'Malaysia');
+    generateLineChart(data, 2016, 2023, 'all', 'all', 'Malaysia');
+    generateMultilevelDonutChart(data, 2016, 2023, 'all', 'all', 'Malaysia');
+    generateStackedBarChart(data, 2016, 2023, 'all', 'all', 'Malaysia');
+    generateMapChart(data, 2016, 2023, 'all', 'all');
+    generateDrilldownBarChart(data, 2016, 2023, 'all', 'all');
+    generateTop5BarChart(data, 2016, 2023, 'all', 'all');
+}).catch(error => {
+    console.error('Error fetching data:', error);
+});
+
+// Predefined types of crimes for each category
+const crimeTypes = {
+    Assault: ["Causing Injury", "Murder", "Rape", "Robbery Gang Armed", "Robbery Gang Unarmed", "Robbery Solo Armed", "Robbery Solo Unarmed"],
+    Property: ["Break In", "Theft Other", "Theft Vehicle Lorry", "Theft Vehicle Motocar", "Theft Vehicle Motorcycle"],
+};
+
+// Reference to dropdown elements
+const crimeCategoryDropdown = document.getElementById("crimeCategory");
+const crimeTypeDropdown = document.getElementById("crimeType");
+
+// Add event listener for both dropdowns to ensure the correct value is passed
+crimeCategoryDropdown.addEventListener("change", updateCharts);
+crimeTypeDropdown.addEventListener("change", updateCharts);
+
+function updateCharts() {
+    const selectedCategory = crimeCategoryDropdown.value;
+    const selectedCrimeType = crimeTypeDropdown.value; // This captures the value from the "Type of Crime" dropdown
+    const startYear = parseInt(document.getElementById('yearRangeStart').value);
+    const endYear = parseInt(document.getElementById('yearRangeEnd').value);
+    const selectedState = document.getElementById('crimeState').value;
+
+    fetchCSVData().then(data => {
+        generateTotalCategoryTypeCards(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStateDistrictCard(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateLineChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMultilevelDonutChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateStackedBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState);
+        generateMapChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateDrilldownBarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+        generateTop5BarChart(data, startYear, endYear, selectedCategory, selectedCrimeType);
+    }).catch(error => {
+        console.error('Error fetching data:', error);
+    });
+}
+
+// Populate "Type of Crime" dropdown based on selected category
+crimeCategoryDropdown.addEventListener("change", function () {
+    const selectedCategory = crimeCategoryDropdown.value;
+
+    // Clear existing options in the "Type of Crime" dropdown
+    crimeTypeDropdown.innerHTML = "<option value='all'>All</option>";
+
+    // Add crime types based on selected category
+    if (selectedCategory !== "all") {
+        const types = crimeTypes[selectedCategory] || [];
+        types.forEach(type => {
+            const option = document.createElement("option");
+            option.value = type;
+            option.textContent = type;
+            crimeTypeDropdown.appendChild(option);
+        });
+    }
+
+    // Trigger chart update
+    updateCharts();
+});
+
+// Trigger initial chart update on page load
+updateCharts();
+
+// Initialize with "All" as default
+crimeCategoryDropdown.dispatchEvent(new Event("change"));
+
+function openModal(state) {
+    const stateInfoModal = document.getElementById('stateInfoModal');
+    const stateNameDiv = document.getElementById('stateName');
+
+    // Fetch additional information if needed
+    const stateInfo = `Some information about ${state}`;  // You can modify this
+
+    if (stateInfoModal && stateNameDiv) {
+        stateNameDiv.textContent = state;  // Set the state name dynamically
+        const infoParagraph = document.querySelector('.modal-content p');
+        infoParagraph.textContent = stateInfo;  // Set the state info dynamically
+        
+        // Show the modal by setting its display style to 'flex'
+        stateInfoModal.style.display = 'flex'; 
+    } else {
+        console.error('Modal or State Name div not found!');
+    }
+}
+
+function closeModal() {
+    document.getElementById('stateInfoModal').style.display = 'none';
+}
+
+
+</script>
+
+</body>
+</html>

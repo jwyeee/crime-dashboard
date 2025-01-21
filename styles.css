@@ -1,0 +1,745 @@
+
+.sidebar {
+    width: 100px;
+    position: fixed;
+    color: black;
+    padding: 20px;
+    display: block;
+    background-color: #E3E3E3;
+    transition: width 0.3s ease; /* Smooth transition for sidebar width */
+    width: 0; /* Sidebar is collapsed by default */
+    overflow: hidden; /* Hide content when sidebar is collapsed */
+    transform: translateX(-100%);
+}
+
+.sidebar ul {
+    list-style-type: none;
+}
+
+.sidebar ul li {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.sidebar.collapsed {
+    transform: translateX(0); /* Show sidebar */
+    width: 100px;
+    height: 100%;
+}
+
+/* Chatbot Toggle Button Container */
+.chatbot-toggle {
+    display: flex;
+    align-items: center; /* Vertically center the content */
+    justify-content: center; /* Center align the button */
+    position: relative; /* Required for tooltip positioning */
+    cursor: pointer; /* Show pointer cursor on hover */
+    pointer-events: auto; /* Allow interactions */
+    gap: 5px; /* Optional: Space between the button and tooltip */
+}
+
+/* Chatbot Button Styles */
+.chatbot-toggle button {
+    background-color: transparent; 
+    cursor: pointer;
+}
+
+/* Chatbot Button Image */
+.chatbot-toggle img {
+    transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+}
+
+/* Tooltip Styles */
+.chatbot-toggle .tooltiptext {
+    visibility: hidden; /* Hidden by default */
+    background-color: black; /* Tooltip background */
+    color: #fff; /* Tooltip text color */
+    text-align: center; /* Center align text */
+    padding: 5px; /* Padding for tooltip content */
+    position: absolute; /* Position relative to the button */
+    top: 40px; /* Position below the button */
+    left: 50%; /* Center the tooltip horizontally */
+    transform: translateX(-50%); /* Center align */
+    z-index: 1000; /* Ensure it is above other elements */
+    opacity: 0; /* Initial hidden state */
+    transition: opacity 0.3s ease; /* Smooth fade-in effect */
+}
+
+/* Show Tooltip on Hover */
+.chatbot-toggle:hover .tooltiptext {
+    visibility: visible; /* Show the tooltip */
+    opacity: 1; /* Fade-in effect */
+}
+
+/* Hover Animation for Chatbot Button */
+.chatbot-toggle button:active img {
+    transform: scale(0.9); /* Slight shrink effect on click */
+    transition: transform 0.1s ease-in-out; /* Smooth transition */
+}
+
+
+#chatbot-container {
+    position: fixed; /* Keep it fixed at the bottom of the page */
+    bottom: 0px; /* Distance from the bottom of the page */
+    right: 15px; /* Align to the right side */
+    width: 300px; /* Set the width of the container */
+    max-height: 400px; /* Set a maximum height */
+    border: 1px solid #ccc; /* Add a border */
+    background-color: white; /* White background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for depth */
+    display: none; /* Hidden by default */
+    flex-direction: column; /* Stack content vertically */
+    overflow: hidden; /* Prevent content overflow */
+    display: none; 
+    position: fixed; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    z-index: 999; 
+    pointer-events: auto;
+}
+
+/* Chatbot Header Styles */
+#chatbot-header {
+    background-color: #9F57A4; /* Header background color */
+    color: white; /* Header text color */
+    padding: 10px; /* Padding inside the header */
+    font-weight: bold; /* Bold text */
+    text-align: center; /* Center the text */
+}
+
+/* Chatbot Messages Area */
+#chatbot-messages {
+    flex: 1; /* Allow this area to grow and shrink */
+    padding: 10px; /* Padding inside the messages area */
+    overflow-y: auto; /* Enable scrolling for overflowing content */
+    background-color: #f9f9f9; /* Light background for messages */
+}
+
+/* Chatbot Input Container */
+#chatbot-input-container {
+    display: flex; /* Arrange input and button side by side */
+    padding: 10px; /* Padding inside the input container */
+    border-top: 1px solid #ccc; /* Border separating the input from messages */
+}
+
+/* Chatbot Input Styles */
+#chatbot-input {
+    flex: 1; /* Allow the input to take most of the space */
+    border: 1px solid #ccc; /* Add a border */
+    padding: 5px; /* Padding inside the input */
+    position: relative;
+    z-index: 11; /* Ensures the input field is above other elements */
+}
+
+/* Chatbot Send Button */
+#chatbot-send {
+    background-color: #B42955; /* Button background color */
+    color: white; /* Button text color */
+    border: none; /* Remove border */
+    padding: 5px 10px; /* Padding inside the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    margin-left: 5px; /* Add space between input and button */
+}
+
+#chatbot-send:hover {
+    background-color: #E76D89; /* Change color on hover */
+}
+
+
+.filter-container {
+    text-align: center;
+    margin: 5px;
+    width: 100%;
+}
+
+label {
+    background-color: #f5f5f5;  /* Light background color for the box */
+    font-size: 14px;        /* Font size */
+    margin-right: 10px;     /* Space between label and select input */
+    color: black;
+}
+
+.slider-container {
+    display: inline-block;
+    text-align: left;
+    width: 85%;
+}
+
+select {
+    width: 100%;
+}
+
+#crimeMapChart {
+    width: 100%;
+    height: 400px;
+    margin: 20px 0;
+    z-index: 1;
+}
+
+#stateInfoModal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 20%; /* Position it closer to the map (adjust as necessary) */
+    left: 50%;
+    transform: translateX(-50%); /* Center it horizontally */
+    width: 300px; /* Smaller width */
+    height: auto; /* Automatically adjust height based on content */
+    border-radius: 8px; /* Rounded corners */
+    z-index: 9999; /* Ensure it's above other content */
+    padding: 15px; /* Padding inside the modal */
+}
+
+/* Modal content styles */
+.modal-content {
+    position: relative;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Close button styles */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#stateName {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: transparent;
+    padding: 8px 15px;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: lightblue;
+}
+
+/* Container for cards */
+.cards-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 20px; /* Space between cards */
+}
+
+/* Style for individual cards with 3D effect */
+.card {
+    background-color: #E3E3E3;
+    border: 1px solid #ccc;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.1); /* Deeper shadows for 3D effect */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for transform and shadows */
+    text-align: center;
+    height: 70px;
+    border-radius: 8px; /* Rounded corners for a softer look */
+}
+
+/* Hover effect for a lift and enhanced shadow */
+.card:hover {
+    transform: translateY(-8px) rotateX(4deg) rotateY(4deg); /* Slight 3D rotation with lift */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 15px 25px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+/* Style for the content inside the card */
+.card-content {
+    display: flex;
+    align-items: center; /* Vertically center content */
+    gap: 10px; /* Space between elements */
+}
+
+/* Image inside card */
+.card-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover; /* Ensures image doesn't stretch */
+}
+
+/* Card value text */
+.card-value {
+    flex-grow: 1;
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Optional: Special color and style for specific card text */
+.card-color-text {
+    color: darkblue;
+    font-weight: bold;  /* Optional: Makes the number stand out */
+}
+
+.visitor-count {
+    margin-top: 15px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: linear-gradient(to right, #003366, #004080, #0059b3);
+  }
+
+
+h1 {
+    font-size: 24px;   
+    letter-spacing: 1px;
+}
+
+h3 {
+    margin: 5px 0; 
+    color: darkblue;
+}
+
+.filters {   
+    display: flex;        
+    flex-direction: column; 
+    align-items: center;  
+    letter-spacing: 2px;
+}
+/* Accessibility Tooltip Container */
+.accessibility {
+    position: relative; /* Allows positioning of the tooltip */
+    display: inline-flex; /* Flex container to adjust alignment */
+    justify-content: space-between; 
+    gap: 30px;
+    pointer-events: none; /* Ensure tooltip container doesn't interfere with events */
+}
+
+.setting-button {
+    background-color: transparent;          
+    cursor: pointer;
+    pointer-events: auto; 
+    border: none; 
+    transition: transform 0.1s ease; /* Smooth click effect */
+    padding: 10px;
+}
+
+/* Export Button Styling */
+.export {
+    letter-spacing: 2px; /* Spacing between letters */
+    align-items: center;
+}
+
+/* Export and Info Icons */
+.export-icons, .info {
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Button Styling */
+.export-button {
+    background-color: transparent;
+    cursor: pointer;
+    border: none; /* Ensures no border appears */
+    transition: transform 0.1s ease; /* Smooth click effect */
+}
+
+/* Active Button State (button shrinks on click) */
+.export-button:active, .setting-button:active {
+    transform: scale(0.9); /* Slightly shrink on click */
+}
+
+/* Help Button Styling */
+.help {
+    margin-top: 10px;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 10;
+    font-size: 16px;
+    color: #007bff; /* Make help text stand out */
+    transition: color 0.3s ease;
+}
+
+
+h3 {
+    margin: 5px 0;       
+    text-align: center;
+}
+
+/* New flex container for .box and .header */
+.main-container {
+    display: flex;
+    max-width: 100%; /* Allow the container to scale */
+    margin: 0 auto;
+}
+
+
+.tooltiptext {
+    visibility: hidden; /* Initially hidden */
+    background-color: black; /* Dark background */
+    color: #fff; /* White text */
+    text-align: center;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Show the tooltip on hover */
+.info:hover .tooltiptext, .help:hover .tooltiptext {
+    visibility: visible; /* Show the tooltip */
+    opacity: 1; /* Fade in effect */
+}
+
+.header {
+    width: 100%; 
+    padding: 5px;
+    margin-top: 10px;
+    color: white;
+}
+
+.header.expanded {
+    margin-left: 140px; 
+}
+
+.header-content {
+    height: 40px;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    margin-left: 0;
+}
+
+
+.header.expanded .chart-section {
+    display: grid; /* Switch to grid layout */
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Flexible columns */
+    grid-gap: 10px; /* Add space between grid items */
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, margin-left 0.3s ease; /* Smooth transition */
+}
+
+.chart-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); /* Flexible columns */
+    grid-gap: 10px; /* Increase space between grid items */
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Individual chart item */
+.chart-item {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Deeper shadow for more 3D effect */
+    padding: 9px;
+    width: 100%; /* Ensures the chart item spans the full cell */
+    height: 100%; /* Adjust height dynamically */
+    box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for transformation */
+}
+
+/* Hover effect for chart item */
+.chart-item:hover {
+    transform: translateY(-5px) rotate(3deg); /* Slight hover effect with tilt */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+}
+
+/* Styling for specific chart containers */
+#crimeLineChart, #crimeDonutChart, #crimeStackedBarChart, #crimeDrilldownBarChart, #crimeMapChart, #crimeTop5BarChart {
+    height: 30.2vh; /* Adjust height of charts, flexible with viewport height */
+    width: 100%; /* Ensure charts take up full width */
+    transition: transform 0.3s ease; /* Smooth transition for charts */
+}
+
+/* Collapsible settings bar */
+.collapsible-bar {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 10%;
+    right: 5%;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px; /* More rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Deeper shadow */
+    z-index: 999;
+    pointer-events: auto;
+    transition: transform 0.3s ease; /* Smooth transition when toggled */
+    color:darkblue; 
+}
+
+/* Header within the settings */
+.collapsible-bar h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Setting label and input styling */
+.setting label {
+    display: inline-block;
+    padding: 8px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 8px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.setting input[type="radio"] {
+    display: none; /* Hide the radio input */
+}
+
+.setting input[type="radio"]:checked + label {
+    background-color: #333;
+    color: #fff;
+}
+
+.setting label:hover {
+    background-color: #f0f0f0; /* Light hover effect */
+}
+
+/* Font size buttons */
+.btn-font-size {
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 8px;
+    background-color: #eee;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-font-size:hover {
+    background-color: #ddd;
+}
+
+.btn-font-size.active {
+    background-color: #333;
+    color: white;
+}
+
+/* For screens 1200px and below (large tablets, laptops) */
+@media (max-width: 1200px) {
+    .cards-container {
+        flex-wrap: wrap; /* Allow cards to wrap */
+        justify-content: center; /* Center-align cards */
+        gap: 15px; /* Spacing between cards */
+    }
+
+    .card {
+        flex: 1 1 45%; /* Cards take up 45% of row width */
+        margin: 10px; /* Add margin for spacing */
+        padding: 15px; /* Adjust padding for clarity */
+        font-size: 16px; /* Adjust text size */
+    }
+
+    .card-header {
+        font-size: 18px; /* Smaller header font */
+        text-align: center; /* Center header text */
+    }
+
+    .card-body {
+        font-size: 14px; /* Body text adjustment */
+    }
+
+    .chart-section {
+        grid-template-columns: 1fr; /* Two columns for charts */
+        gap: 20px; /* Space between charts */
+    }
+
+    .sidebar {
+        width: 80px; /* Adjust sidebar width */
+    }
+
+    .description {
+        width: 80%; /* Reduce description width */
+    }
+}
+
+/* For screens 768px and below (tablets, small devices) */
+@media (max-width: 768px) {
+    .cards-container {
+        flex-wrap: wrap; /* Stack cards */
+        gap: 10px; /* Reduce gap */
+    }
+
+    .card {
+        flex: 1 1 100%; /* Cards take full width */
+        margin: 10px auto; /* Center-align cards */
+        font-size: 14px; /* Reduce font size */
+    }
+
+    .chart-section {
+        grid-template-columns: 1fr; /* Single column layout */
+    }
+
+    .chart-section > div {
+        height: 40vh; /* Adjust chart height */
+    }
+
+    .sidebar {
+        width: 60px; /* Narrow sidebar */
+        font-size: 12px; /* Smaller font */
+    }
+
+    .header {
+        height: 50px; /* Reduce header height */
+        font-size: 16px; /* Adjust header font size */
+    }
+
+    .description {
+        width: 100%; /* Make description full width */
+    }
+}
+
+/* For screens 480px and below (phones) */
+@media (max-width: 480px) {
+    .cards-container {
+        flex-direction: column; /* Stack cards vertically */
+        gap: 5px; /* Minimal gap between cards */
+    }
+
+    .card {
+        padding: 10px; /* Reduce padding */
+        font-size: 12px; /* Smaller font size */
+    }
+
+    .card-header {
+        font-size: 14px; /* Adjust header text size */
+    }
+
+    .card-body {
+        font-size: 12px; /* Smaller body text */
+    }
+
+    .chart-section {
+        grid-template-columns: 1fr; /* Single column layout */
+        gap: 10px; /* Reduce gap between charts */
+    }
+
+    .chart-section > div {
+        height: 35vh; /* Reduce chart height */
+    }
+
+    .header {
+        font-size: 14px; /* Smaller header font */
+    }
+
+    .footer {
+        font-size: 12px; /* Smaller footer font size */
+        padding: 5px; /* Adjust footer padding */
+    }
+
+    #chatbot-container {
+        height: 40vh; /* Reduce chatbot height */
+        bottom: 0; /* Fix at bottom */
+    }
+}
+
+/* For screens 1200px and below (large tablets, laptops) */
+@media (max-width: 1200px) {
+    .filter-container {
+        width: 90%; /* Allow the filter to take up more space */
+        margin: 0 auto; /* Center the filter */
+    }
+
+    .filter-item {
+        display: inline-block; /* Inline items for better spacing */
+        margin: 10px 5px; /* Adjust spacing between filter items */
+    }
+
+    .filter-label {
+        font-size: 14px; /* Adjust label font size */
+    }
+
+    .filter-select, .filter-input {
+        width: 100%; /* Make input/select take full width */
+        font-size: 14px; /* Adjust font size */
+        padding: 8px; /* Adjust padding for inputs */
+    }
+}
+
+/* For screens 768px and below (tablets, small devices) */
+@media (max-width: 768px) {
+    .filter-container {
+        width: 100%; /* Full width for filter */
+        margin: 0 5%; /* Add margins to prevent edge clipping */
+    }
+
+    .filter-item {
+        display: block; /* Stack filter items vertically */
+        width: 100%; /* Ensure filter items take full width */
+        margin-bottom: 10px; /* Add space between stacked items */
+    }
+
+    .filter-label {
+        font-size: 12px; /* Smaller font for filter labels */
+    }
+
+    .filter-select, .filter-input {
+        width: 100%; /* Full width for input/select */
+        font-size: 12px; /* Adjust font size */
+        padding: 6px; /* Reduce padding for smaller screens */
+    }
+}
+
+/* For screens 480px and below (phones) */
+@media (max-width: 480px) {
+    .filter-container {
+        width: 100%; /* Ensure the filter takes up full screen width */
+        margin: 0 2%; /* Small margin for extra spacing */
+    }
+
+    .filter-item {
+        display: block; /* Stack items vertically */
+        width: 100%; /* Full width for filter items */
+        margin-bottom: 5px; /* Reduce margin between items */
+    }
+
+    .filter-label {
+        font-size: 10px; /* Smaller font for labels */
+    }
+
+    .filter-select, .filter-input {
+        width: 100%; /* Full width for inputs */
+        font-size: 10px; /* Smaller font for inputs */
+        padding: 4px; /* Reduce padding for small devices */
+    }
+}
+
