@@ -499,7 +499,7 @@ h3 {
 
 /* Styling for specific chart containers */
 #crimeLineChart, #crimeDonutChart, #crimeStackedBarChart, #crimeDrilldownBarChart, #crimeMapChart, #crimeTop5BarChart {
-    height: 32.7vh; /* Adjust height of charts, flexible with viewport height */
+    height: 32vh; /* Adjust height of charts, flexible with viewport height */
     width: 100%; /* Ensure charts take up full width */
     transition: transform 0.3s ease; /* Smooth transition for charts */
 }
