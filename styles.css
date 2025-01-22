@@ -1,3 +1,6 @@
+.box {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
 
 .sidebar {
     width: 100px;
@@ -28,7 +31,7 @@
 }
 
 /* Chatbot Toggle Button Container */
-.chatbot-toggle {
+.chatbot-toggle, .page-toggle {
     display: flex;
     align-items: center; /* Vertically center the content */
     justify-content: center; /* Center align the button */
@@ -39,18 +42,18 @@
 }
 
 /* Chatbot Button Styles */
-.chatbot-toggle button {
+.chatbot-toggle button, .page-toggle button {
     background-color: transparent; 
     cursor: pointer;
 }
 
 /* Chatbot Button Image */
-.chatbot-toggle img {
+.chatbot-toggle img, .page-toggle img {
     transition: transform 0.2s ease-in-out; /* Smooth hover effect */
 }
 
 /* Tooltip Styles */
-.chatbot-toggle .tooltiptext {
+.chatbot-toggle .tooltiptext, .page-toggle .tooltiptext {
     visibility: hidden; /* Hidden by default */
     background-color: black; /* Tooltip background */
     color: #fff; /* Tooltip text color */
@@ -66,13 +69,13 @@
 }
 
 /* Show Tooltip on Hover */
-.chatbot-toggle:hover .tooltiptext {
+.chatbot-toggle:hover .tooltiptext, .page-toggle:hover .tooltiptext {
     visibility: visible; /* Show the tooltip */
     opacity: 1; /* Fade-in effect */
 }
 
 /* Hover Animation for Chatbot Button */
-.chatbot-toggle button:active img {
+.chatbot-toggle button:active img, .page-toggle button:active img {
     transform: scale(0.9); /* Slight shrink effect on click */
     transition: transform 0.1s ease-in-out; /* Smooth transition */
 }
@@ -149,6 +152,7 @@
     text-align: center;
     margin: 5px;
     width: 100%;
+    column-gap: 50px;
 }
 
 label {
@@ -267,7 +271,6 @@ button:hover {
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for transform and shadows */
     text-align: center;
     height: 70px;
-    border-radius: 8px; /* Rounded corners for a softer look */
 }
 
 /* Hover effect for a lift and enhanced shadow */
@@ -308,10 +311,24 @@ button:hover {
     margin-top: 15px;
 }
 
+#resetFiltersButton {
+    cursor: pointer;
+    border: none
+  }
+  
+  #resetFiltersButton img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: invert(1);
+  }
+
 body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif; 
+    font-weight: 400;
     background: linear-gradient(to right, #003366, #004080, #0059b3);
   }
 
@@ -334,11 +351,12 @@ h3 {
 }
 /* Accessibility Tooltip Container */
 .accessibility {
-    position: relative; /* Allows positioning of the tooltip */
-    display: inline-flex; /* Flex container to adjust alignment */
-    justify-content: space-between; 
+    position: relative;
+    display: inline-flex;
+    justify-content: space-between;
     gap: 30px;
-    pointer-events: none; /* Ensure tooltip container doesn't interfere with events */
+    pointer-events: none;
+    margin-left: auto; /* Add this line to move accessibility options to the right */
 }
 
 .setting-button {
@@ -434,9 +452,10 @@ h3 {
 .header-content {
     height: 40px;
     display: flex; 
-    justify-content: space-between; 
+    gap:10px;
     align-items: center;
     margin-left: 0;
+    justify-content: space-between;
 }
 
 
@@ -453,7 +472,7 @@ h3 {
 .chart-section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); /* Flexible columns */
-    grid-gap: 10px; /* Increase space between grid items */
+    grid-gap: 12px; /* Increase space between grid items */
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
@@ -480,7 +499,7 @@ h3 {
 
 /* Styling for specific chart containers */
 #crimeLineChart, #crimeDonutChart, #crimeStackedBarChart, #crimeDrilldownBarChart, #crimeMapChart, #crimeTop5BarChart {
-    height: 30.2vh; /* Adjust height of charts, flexible with viewport height */
+    height: 32.7vh; /* Adjust height of charts, flexible with viewport height */
     width: 100%; /* Ensure charts take up full width */
     transition: transform 0.3s ease; /* Smooth transition for charts */
 }
@@ -742,4 +761,3 @@ h3 {
         padding: 4px; /* Reduce padding for small devices */
     }
 }
-
