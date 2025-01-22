@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crime Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif; 
+      font-weight: 400;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: linear-gradient(to right, #003366, #004080, #0059b3);
+      color: #fff;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header nav {
+      display: flex;
+      align-items: center;
+    }
+
+    header nav .home-icon {
+      margin-left: auto; /* Pushes the home icon to the right */
+    }
+
+    header nav a {
+      color: #fff;
+      margin: 0 15px;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    header nav a:hover {
+      text-decoration: underline;
+    }
+
+    section {
+      padding: 20px;
+    }
+
+    #comparisons {
+      background-color: #f0f8ff;
+      min-height: 100vh;
+      padding-top: 60px;
+    }
+
+    #prediction {
+      background-color: #f0f8ff;
+      min-height: 100vh;
+      padding-top: 60px;
+    }
+    
+    #safety-tips {
+      background-color: #f0f8ff;
+      min-height: 100vh;
+      padding-top: 60px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+      padding-top: 20px;
+    }
+
+    /* Carousel Styles */
+    .carousel {
+      max-width: 800px;
+      margin: 20px auto;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .carousel-slides {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      height: 60vh;
+    }
+
+    .carousel-slide {
+      flex: 0 0 100%;
+      text-align: center;
+      font-size: 18px;
+      line-height: 1.6;
+      padding: 20px;
+      background-color: #e6f7ff;
+    }
+
+    .carousel-buttons {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+    }
+
+    .carousel-button {
+      background-color: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    .carousel-button:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    /* Smooth scroll behavior */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .comparison-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .comparison-section {
+      width: 30%;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #ffffff;
+      /* Add 3D effects */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transform: rotateY(3deg);
+      transition: transform 0.3s ease; 
+    }
+
+    .comparison-section:hover {
+      transform: rotateY(5deg);
+    }
+
+    .vs-section {
+      width: 10%;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      /* Add 3D effects */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      perspective: 500px; 
+      transform: rotateZ(3deg);
+    }
+
+    /* Containers to hold filters horizontally */
+    .filters-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px; /* Reduced gap between filter boxes */
+      /* Add 3D effects */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      perspective: 800px; 
+    }
+
+    /* Style for each filter box */
+    .filter-container {
+      width: 30%; /* Reduced width of each filter box */
+      padding: 8px; /* Adjust padding to make it smaller */
+      box-sizing: border-box;
+    }
+
+    /* Adjusting checkbox group layout */
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Adjusting label and checkbox alignment */
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    /* Adjusting spacing and alignment of checkboxes */
+    .checkbox-group input[type="checkbox"] {
+      margin-right: 5px; /* Reduced margin for checkboxes */
+    }
+
+    /* Media Query for smaller screens */
+    @media (max-width: 768px) {
+      .filters-container {
+        flex-direction: column; /* Stack filters vertically on smaller screens */
+        align-items: center; /* Center the filter boxes horizontally */
+        gap: 10px; /* Increase gap between filter boxes */
+      }
+
+      .filter-container {
+        width: 80%; /* Make filter boxes wider on smaller screens */
+      }
+
+    }
+
+    #charts {
+      display: flex;
+      flex-wrap: wrap; /* Allow charts to wrap to the next line */
+      justify-content: space-between; /* Space charts evenly */
+    }
+
+    #compareBtn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #compareBtn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Style the button that is used to open and close the collapsible content */
+    .collapsible {
+      background-color: #f1f1f1;
+      color: #444;
+      cursor: pointer;
+      padding: 8px;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .collapsible:after {
+      content: '+';
+      font-size: 20px;
+      float: right;
+      margin-left: 10px;
+    }
+
+    .collapsible.active:after {
+      content: '−';
+    }
+
+    .content {
+      padding: 0 8px;
+      display: none;
+      overflow: hidden;
+      background-color: #f9f9f9;
+    }
+
+    .checkbox-group label {
+      display: block;
+      margin: 5px 0;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="#comparisons">Comparisons</a>
+      <a href="#prediction">Prediction</a>
+      <a href="#safety-tips">Safety Tips</a>
+      <a href="index.html" class="home-icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Home" style="width: 30px; height: auto; "/>
+      </a>
+    </nav>
+  </header>
+
+  <section id="comparisons">
+    <h2 style="text-align: center;">Comparisons</h2>
+    <p style="text-align: center;">Select filter values for two datasets to compare crime trends.</p>
+  
+    <div class="comparison-wrapper">
+      <!-- Dataset A -->
+      <div class="comparison-section" id="datasetA">
+        <h3>Dataset A</h3>
+        <button type="button" class="collapsible">Year</button>
+        <div class="content">
+          <div class="filters-container">
+            <!-- Year Range Filter -->
+            <div class="filter-container">
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="yearRangeA" value="2016"> 2016</label>
+                <label><input type="checkbox" name="yearRangeA" value="2017"> 2017</label>
+                <label><input type="checkbox" name="yearRangeA" value="2018"> 2018</label>
+                <label><input type="checkbox" name="yearRangeA" value="2019"> 2019</label>
+                <label><input type="checkbox" name="yearRangeA" value="2020"> 2020</label>
+                <label><input type="checkbox" name="yearRangeA" value="2021"> 2021</label>
+                <label><input type="checkbox" name="yearRangeA" value="2022"> 2022</label>
+                <label><input type="checkbox" name="yearRangeA" value="2023"> 2023</label>
+              </div>
+            </div>
+          </div>  
+        </div>
+        <button type="button" class="collapsible">Category</button>
+        <div class="content">
+          <div class="filters-container">        
+            <!-- Crime Category Filter -->
+            <div class="filter-container">
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="crimeCategoryA" value="Assault"> Assault</label>
+                <label><input type="checkbox" name="crimeCategoryA" value="Property"> Property</label>
+              </div>
+            </div>
+           </div>   
+        </div>
+        <button type="button" class="collapsible">State</button>
+        <div class="content">
+          <div class="filters-container">        
+            <!-- State Filter -->
+            <div class="filter-container">
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="crimeStateA" value="Johor"> Johor</label>
+                <label><input type="checkbox" name="crimeStateA" value="Kedah"> Kedah</label>
+                <label><input type="checkbox" name="crimeStateA" value="Kelantan"> Kelantan</label>
+                <label><input type="checkbox" name="crimeStateA" value="Melaka"> Malacca</label>
+                <label><input type="checkbox" name="crimeStateA" value="Negeri Sembilan">Negeri Sembilan</label>
+                <label><input type="checkbox" name="crimeStateA" value="Pahang">Pahang</label>
+                <label><input type="checkbox" name="crimeStateA" value="Pulau Pinang">Penang</label>
+                <label><input type="checkbox" name="crimeStateA" value="Perak">Perak</label>
+                <label><input type="checkbox" name="crimeStateA" value="Perlis">Perlis</label>
+                <label><input type="checkbox" name="crimeStateA" value="Sabah">Sabah</label>
+                <label><input type="checkbox" name="crimeStateA" value="Sarawak"> Sarawak</label>
+                <label><input type="checkbox" name="crimeStateA" value="Selangor"> Selangor</label>
+                <label><input type="checkbox" name="crimeStateA" value="Terengganu">Terengganu</label>
+                <label><input type="checkbox" name="crimeStateA" value="W.P. Kuala Lumpur">Wilayah Persekutuan Kuala Lumpur</label>
+              </div>
+            </div>
+          </div> 
+        </div>   
+      </div>
+  
+      <!-- "VS" Section -->
+      <div class="vs-section">
+        <h3 style="text-align: center;">VS</h3>
+      </div>
+  
+      <!-- Dataset B -->
+      <div class="comparison-section" id="datasetB">
+        <h3>Dataset B</h3>
+        <button type="button" class="collapsible">Year</button>
+        <div class="content">
+          <div class="filters-container">
+            <!-- Year Range Filter -->
+            <div class="filter-container">
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="yearRangeB" value="2016"> 2016</label>
+                <label><input type="checkbox" name="yearRangeB" value="2017"> 2017</label>
+                <label><input type="checkbox" name="yearRangeB" value="2018"> 2018</label>
+                <label><input type="checkbox" name="yearRangeB" value="2019"> 2019</label>
+                <label><input type="checkbox" name="yearRangeB" value="2020"> 2020</label>
+                <label><input type="checkbox" name="yearRangeB" value="2021"> 2021</label>
+                <label><input type="checkbox" name="yearRangeB" value="2022"> 2022</label>
+                <label><input type="checkbox" name="yearRangeB" value="2023"> 2023</label>
+              </div>
+            </div>
+          </div>  
+        </div>
+        <button type="button" class="collapsible">Category</button>
+        <div class="content">
+          <div class="filters-container">        
+            <!-- Crime Category Filter -->
+            <div class="filter-container">
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="crimeCategoryB" value="Assault"> Assault</label>
+                <label><input type="checkbox" name="crimeCategoryB" value="Property"> Property</label>
+              </div>
+            </div>
+           </div>   
+        </div>
+        <button type="button" class="collapsible">State</button>
+        <div class="content">
+          <div class="filters-container">        
+            <!-- State Filter -->
+            <div class="filter-container">
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="crimeStateB" value="Johor"> Johor</label>
+                <label><input type="checkbox" name="crimeStateB" value="Kedah"> Kedah</label>
+                <label><input type="checkbox" name="crimeStateB" value="Kelantan"> Kelantan</label>
+                <label><input type="checkbox" name="crimeStateB" value="Melaka"> Malacca</label>
+                <label><input type="checkbox" name="crimeStateB" value="Negeri Sembilan">Negeri Sembilan</label>
+                <label><input type="checkbox" name="crimeStateB" value="Pahang">Pahang</label>
+                <label><input type="checkbox" name="crimeStateB" value="Pulau Pinang">Penang</label>
+                <label><input type="checkbox" name="crimeStateB" value="Perak">Perak</label>
+                <label><input type="checkbox" name="crimeStateB" value="Perlis">Perlis</label>
+                <label><input type="checkbox" name="crimeStateB" value="Sabah">Sabah</label>
+                <label><input type="checkbox" name="crimeStateB" value="Sarawak"> Sarawak</label>
+                <label><input type="checkbox" name="crimeStateB" value="Selangor"> Selangor</label>
+                <label><input type="checkbox" name="crimeStateB" value="Terengganu">Terengganu</label>
+                <label><input type="checkbox" name="crimeStateB" value="W.P. Kuala Lumpur">Wilayah Persekutuan Kuala Lumpur</label>
+              </div>
+            </div>
+          </div> 
+        </div>          
+      </div>
+    </div>
+  
+    <!-- Compare Button -->
+    <div style="text-align: center; margin-top: 20px;">
+      <button id="compareBtn">Compare</button>
+    </div>
+  
+    <!-- Comparison Results -->
+    <div id="comparisonResults" style="margin-top: 20px; text-align: center;">
+      <h3>Comparison Results</h3>
+
+      <div id="charts" style="display: flex; justify-content: space-between;">
+        <div>
+            <div>
+              <canvas id="chartA"></canvas>
+          </div>
+        </div>
+        <div>
+            <canvas id="chartB"></canvas>
+        </div>
+    </div>
+    </div>
+  </section>  
+
+  <section id="prediction">
+    <h2>Prediction Year 2024</h2>
+  </section>
+
+  <section id="safety-tips">
+    <h2>Safety Tips</h2>
+    <div class="carousel">
+      <div class="carousel-slides">
+        <div class="carousel-slide">Tip 1: Always stay alert to your surroundings, especially in unfamiliar areas.</div>
+        <div class="carousel-slide">Tip 2: Avoid walking alone at night and keep your phone charged.</div>
+        <div class="carousel-slide">Tip 3: Use secure locks at home and report suspicious activities.</div>
+        <div class="carousel-slide">Tip 4: Trust your instincts—if something feels off, leave the area immediately.</div>
+      </div>
+      <div class="carousel-buttons">
+        <button class="carousel-button" id="prev">❮</button>
+        <button class="carousel-button" id="next">❯</button>
+      </div>
+    </div>
+    <footer></footer>
+  </section>
+
+<script>
+
+  // JavaScript for Carousel Functionality
+  const slides = document.querySelector('.carousel-slides');
+    const slideCount = slides.children.length;
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+
+    let currentIndex = 0;
+
+    // Function to update slide position
+    function updateSlidePosition() {
+      const slideWidth = slides.children[0].offsetWidth;
+      slides.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+    }
+
+    // Previous button event
+    prevButton.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + slideCount) % slideCount;
+      updateSlidePosition();
+    });
+
+    // Next button event
+    nextButton.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % slideCount;
+      updateSlidePosition();
+    });
+
+const collapsibles = document.querySelectorAll('.collapsible');
+
+  collapsibles.forEach(button => {
+    button.addEventListener('click', function () {
+      // Toggle the active class
+      this.classList.toggle('active');
+
+      // Find the next sibling (the content div)
+      const content = this.nextElementSibling;
+
+      // Toggle the content visibility
+      if (content.style.display === 'block') {
+        content.style.display = 'none';
+      } else {
+        content.style.display = 'block';
+      }
+    });
+  });
+
+// Event listener for the "Compare" button
+document.getElementById("compareBtn").addEventListener("click", function () {
+  // Get selected values for Dataset A and Dataset B
+  const yearRangeA = getSelectedValues("yearRangeA");
+  const yearRangeB = getSelectedValues("yearRangeB");
+
+  const crimeCategoryA = getSelectedValues("crimeCategoryA");
+  const crimeCategoryB = getSelectedValues("crimeCategoryB");
+
+  const crimeStateA = getSelectedValues("crimeStateA");
+  const crimeStateB = getSelectedValues("crimeStateB");
+
+  // Prepare the comparison results text
+  let comparisonResults = `<h3>Comparison Results</h3>`;
+  comparisonResults += `<p><strong>Dataset A:</strong> Year Range: ${yearRangeA.join(", ") || "All"}, Crime Category: ${crimeCategoryA.join(", ") || "All"}, State: ${crimeStateA.join(", ") || "All"}</p>`;
+  comparisonResults += `<p><strong>Dataset B:</strong> Year Range: ${yearRangeB.join(", ") || "All"}, Crime Category: ${crimeCategoryB.join(", ") || "All"}, State: ${crimeStateB.join(", ") || "All"}</p>`;
+
+  // Display comparison results and render the charts
+  const comparisonResultsDiv = document.getElementById("comparisonResults");
+  comparisonResultsDiv.innerHTML = `
+      <h3>Comparison Results</h3>
+      <p><strong>Dataset A:</strong> Year Range: ${yearRangeA.join(", ") || "All"}, 
+      Crime Category: ${crimeCategoryA.join(", ") || "All"}, 
+      State: ${crimeStateA.join(", ") || "All"}</p>
+      <p><strong>Dataset B:</strong> Year Range: ${yearRangeB.join(", ") || "All"}, 
+      Crime Category: ${crimeCategoryB.join(", ") || "All"}, 
+      State: ${crimeStateB.join(", ") || "All"}</p>
+
+      <div id="charts" style="display: flex; justify-content: space-between;">
+        <div>
+            <div>
+              <canvas id="chartA" width="700" height="500" style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); perspective: 800px;"></canvas>
+          </div>
+        </div>
+        <div>
+            <canvas id="chartB" width="700" height="500" style="box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); perspective: 800px;"></canvas>
+        </div>
+      </div>
+  `;
+
+  // Fetch and parse the CSV file
+  fetch('crime_data.csv')
+      .then(response => response.text())
+      .then(csvData => {
+          Papa.parse(csvData, {
+              header: true,
+              skipEmptyLines: true,
+              complete: function(results) {
+                  const dataset = results.data;
+
+                  // Filter and combine data for chartA (based on selected filters for Dataset A)
+                  const chartAData = dataset.filter(row => {
+                      const year = row.date.split('-')[0]; // Extract year from date
+                      return (
+                          (yearRangeA.length === 0 || yearRangeA.includes(year)) &&
+                          (crimeCategoryA.length === 0 || crimeCategoryA.includes(row.category)) &&
+                          (crimeStateA.length === 0 || crimeStateA.includes(row.state))
+                      );
+                  });
+
+                  // Filter and combine data for chartB (based on selected filters for Dataset B)
+                  const chartBData = dataset.filter(row => {
+                      const year = row.date.split('-')[0]; // Extract year from date
+                      return (
+                          (yearRangeB.length === 0 || yearRangeB.includes(year)) &&
+                          (crimeCategoryB.length === 0 || crimeCategoryB.includes(row.category)) &&
+                          (crimeStateB.length === 0 || crimeStateB.includes(row.state))
+                      );
+                  });
+
+                  // Group and sum the crime data for chartA
+                  const groupedChartA = groupAndSumByYear(chartAData);
+
+                  // Group and sum the crime data for chartB
+                  const groupedChartB = groupAndSumByYear(chartBData);
+
+                  // Prepare data for chartA
+                  const labelsA = Object.keys(groupedChartA); // Years
+                  const combinedDataA = labelsA.map(year => {
+                      return groupedChartA[year]['Assault'] + groupedChartA[year]['Property']; // Combine crime counts for Assault and Property
+                  });
+
+                  // Prepare data for chartB
+                  const labelsB = Object.keys(groupedChartB); // Years
+                  const combinedDataB = labelsB.map(year => {
+                      return groupedChartB[year]['Assault'] + groupedChartB[year]['Property']; // Combine crime counts for Assault and Property
+                  });
+
+                  // Create the charts
+                  createChart('chartA', labelsA, combinedDataA, 'Crime Trends for Dataset A');
+                  createChart('chartB', labelsB, combinedDataB, 'Crime Trends for Dataset B');
+              }
+          });
+      })
+      .catch(error => console.error('Error fetching CSV:', error));
+});
+
+// Function to group and sum the crime data by year and category
+function groupAndSumByYear(data) {
+    const groupedData = {};
+    
+    data.forEach(row => {
+        const year = row.date.split('-')[0]; // Extract year from date
+        const category = row.category;
+
+        if (!groupedData[year]) {
+            groupedData[year] = { 'Assault': 0, 'Property': 0 };
+        }
+
+        // Add the crimes for Assault and Property categories
+        groupedData[year][category] += parseInt(row.crimes, 10);
+    });
+
+    return groupedData;
+}
+
+// Function to create a chart using Chart.js
+function createChart(canvasId, labels, data, chartTitle) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    new Chart(ctx, {
+        type: 'line', // Line chart
+        data: {
+            labels: labels,
+            datasets: [{
+                label: chartTitle,
+                data: data,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: chartTitle
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Function to get selected values from the checkboxes
+function getSelectedValues(name) {
+    let selectedValues = [];
+    document.querySelectorAll(`input[name="${name}"]:checked`).forEach((checkbox) => {
+        selectedValues.push(checkbox.value);
+    });
+    return selectedValues;
+}
+
+
+  </script>
+</body>
+</html>
