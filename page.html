@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crime Dashboard</title>
+  <title>Crime Lens</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <style>
     body {
       font-family: 'Poppins', sans-serif; 
@@ -50,6 +50,12 @@
     }
 
     #comparisons {
+      background-color: #f0f8ff;
+      min-height: 100vh;
+      padding-top: 60px;
+    }
+
+    #prediction {
       background-color: #f0f8ff;
       min-height: 100vh;
       padding-top: 60px;
@@ -259,12 +265,113 @@
       margin: 5px 0;
     }
 
+    .home-icon {
+        background-color: transparent;
+        padding: 8px 15px;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .home-icon:hover {
+        background-color: lightblue;
+    }
+
+    .home-icon:active {
+        transform: scale(0.9); /* Slightly shrink on click */
+    }
+
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-between;
+    }
+
+    .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        min-width: 300px;
+    }
+
+    #yearlyTable {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    #yearlyTable th, #yearlyTable td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+
+    #yearlyTable th {
+        background-color: #f5f5f5;
+    }
+
+    /* Ensures chart takes full width of its container */
+.chart-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chart-container {
+        min-height: 250px; /* Smaller height for mobile */
+    }
+}
+
+#filterForm .container {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 5px; /* Reduced gap */
+            align-items: center;
+        }
+
+        #filterForm label {
+            font-family: 'Poppins', sans-serif; 
+            text-align: right;
+            padding-right: 5px; 
+            font-size: 12px;
+        }
+
+        #filterForm select, #filterForm button {
+            padding: 6px; /* Reduced padding */
+            border: 1px solid #ccc;
+            border-radius: 3px; /* Reduced border-radius */
+            width: calc(100% - 12px); /* Adjusted width */
+            box-sizing: border-box;
+            font-size: 0.9em; /* Slightly smaller font */
+        }
+
+        #filterForm button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            grid-column: 1 / 3;
+            margin-top: 5px; /* Reduced margin */
+        }
+
+        #filterForm button:hover {
+            background-color: #0056b3;
+        }
+
   </style>
 </head>
 <body>
   <header>
     <nav>
       <a href="#comparisons">Comparisons</a>
+      <a href="#prediction">Prediction</a>
       <a href="#safety-tips">Safety Tips</a>
       <a href="index.html" class="home-icon">
         <img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Home" style="width: 30px; height: auto; "/>
@@ -423,14 +530,72 @@
     </div>
   </section>  
 
+  <section id="prediction">
+    <h2>Prediction</h2>
+    <div class="container">
+        <div class="card">
+            <h3>Model Performance</h3>
+            <p id="accuracy"></p>
+            <hr>
+            <h3>Yearly Crime Comparison</h3>
+            <table id="yearlyTable">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Actual Crimes</th>
+                        <th>Predicted Crimes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <form id="filterForm" method="POST" action="/predict">
+                <div class="container">
+                    <label for="state">State:</label>
+                    <select id="state" name="state"></select>
+
+                    <label for="district">District:</label>
+                    <select id="district" name="district"></select>
+
+                    <label for="category">Category:</label>
+                    <select id="category" name="category"></select>
+
+                    <label for="type">Crime Type:</label>
+                    <select id="type" name="type"></select>
+
+                    <button type="submit">Predict</button>
+                </div>
+            </form>
+            <hr>
+            <div id="crimeChart"></div>
+        </div>
+    </div>
+</section>
+
+
   <section id="safety-tips">
     <h2>Safety Tips</h2>
     <div class="carousel">
       <div class="carousel-slides">
-        <div class="carousel-slide">Tip 1: Always stay alert to your surroundings, especially in unfamiliar areas.</div>
-        <div class="carousel-slide">Tip 2: Avoid walking alone at night and keep your phone charged.</div>
-        <div class="carousel-slide">Tip 3: Use secure locks at home and report suspicious activities.</div>
-        <div class="carousel-slide">Tip 4: Trust your instincts—if something feels off, leave the area immediately.</div>
+          <div class="carousel-slide">
+            <p>Tip 1: Always stay alert to your surroundings, especially in unfamiliar areas.</p>
+            <img src="https://www.usfa.fema.gov/img/pictographs/64.3700x1800.png" style="max-width: 100%; height: auto;">
+          </div>
+          <div class="carousel-slide">
+            <p>Tip 2: Avoid walking alone at night and keep your phone charged.</p>
+            <img src="https://th.bing.com/th/id/R.0d728ef7e53ab2d6668f8615e8da8191?rik=Im2GHyCGQWhL2g&riu=http%3a%2f%2fwww.wikihow.com%2fimages%2fb%2fba%2fWalk-Safely-at-Night-Step-12.jpg&ehk=MZEQeW226ABhUw1m8HFqurGi6dxMtHPMu1Vq7m2TAAk%3d&risl=&pid=ImgRaw&r=0" style="max-width: 100%; height: auto;">
+          </div>
+          <div class="carousel-slide">
+            <p>Tip 3: Use secure locks at home and report suspicious activities.</p>
+            <img src="https://th.bing.com/th/id/OIP.st-cf5pKw3_Pc6oKyoEXkQHaHk?pid=ImgDet&w=474&h=484&rs=1" style="max-width: 100%; height: auto;">
+          </div>
+          <div class="carousel-slide">
+            <p>Tip 4: Trust your instincts—if something feels off, leave the area immediately.</p>
+            <img src="https://th.bing.com/th/id/R.45d048fd5c4a2d38c03fb176164d6232?rik=H%2btJs4qbnUnVnA&riu=http%3a%2f%2fimages.clipartpanda.com%2finstinct-clipart-instinct-puzzle-piece-find-answer-solve-puzzle-gut-feeling-solut-word-green-to-solution-to-problem-intuition-45785227.jpg&ehk=bOuZ5BRzq6lmRaRBgUnDZ4qkY%2f19TvrkAYXF1UITw%2b8%3d&risl=&pid=ImgRaw&r=0" style="max-width: 100%; height: auto;">
+          </div>
       </div>
       <div class="carousel-buttons">
         <button class="carousel-button" id="prev">❮</button>
@@ -441,6 +606,200 @@
   </section>
 
 <script>
+
+window.addEventListener("resize", () => {
+    if (chartInstance) {
+        chartInstance.resize(); // Forces the chart to fit the container
+    }
+});
+
+window.onload = function() {
+            fetch('crime_predictions.json')
+                .then(response => response.json())
+                .then(data => {
+                    updatePage(data);
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        };
+
+        function updatePage(data) {
+            const modelPerformance = {
+                accuracy: data.accuracy,
+                mae: data.mae,
+                rmse: data.rmse,
+                mape: data.mape
+            };
+
+            const yearlyData = data.yearly_values.map(item => ({
+                year: item.year,
+                y: item.y,
+                yhat: item.yhat
+            }));
+
+            const years = yearlyData.map(d => d.year);
+            const actualCrimes = yearlyData.map(d => d.y);
+            const predictedCrimes = yearlyData.map(d => d.yhat);
+
+            // Forecast data processing
+            const forecastData = data.forecast_data || [];
+            const forecastDates = forecastData.map(item => new Date(item.ds));
+            const forecastYears = forecastDates.map(date => date.getFullYear());
+            const forecastPredictedCrimes = forecastData.map(item => item.yhat);
+
+            // Add forecast data for 2024 (or other future years) to the arrays
+            if (forecastYears.length > 0 && !years.includes(forecastYears[forecastYears.length -1])) {
+                const forecastYear = forecastYears[forecastYears.length -1];
+                const predictedForecast = forecastPredictedCrimes[forecastYears.length -1];
+                years.push(forecastYear);
+                actualCrimes.push(null);
+                predictedCrimes.push(predictedForecast);
+                yearlyData.push({
+                    year: forecastYear,
+                    y: null,
+                    yhat: predictedForecast
+                });
+            }
+
+            document.getElementById('accuracy').innerText = `Accuracy: ${modelPerformance.accuracy.toFixed(2)}%`;
+
+            const tableBody = document.querySelector("#yearlyTable tbody");
+            tableBody.innerHTML = "";
+            yearlyData.forEach(d => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${d.year}</td>
+                    <td>${d.y ? d.y.toLocaleString() : 'N/A'}</td>
+                    <td>${d.yhat.toLocaleString()}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            const actualTrace = {
+                x: years,
+                y: actualCrimes,
+                mode: 'lines+markers',
+                name: 'Actual Crimes',
+                line: { color: 'blue' }
+            };
+
+            const predictedTrace = {
+                x: years,
+                y: predictedCrimes,
+                mode: 'lines+markers',
+                name: 'Predicted Crimes',
+                line: { color: 'red', dash: 'dash' }
+            };
+
+            const layout = {
+                title: 'Predicted Crimes 2024',
+                xaxis: { title: 'Year' },
+                yaxis: { title: 'Number of Crimes' },
+                legend: {
+                    orientation: "h",
+                    x: 0.5,
+                    y: -0.5,
+                    xanchor: "center",
+                    yanchor: "top"
+                }
+            };
+
+            Plotly.newPlot('crimeChart', [actualTrace, predictedTrace], layout);
+        }
+
+        function initialPrediction() {
+            const formData = new FormData();
+            formData.append("state", "All"); // Default state
+            formData.append("district", "All"); // Default district
+            formData.append("category", "All"); // Default category
+            formData.append("type", "All"); // Default type
+
+            fetch("/predict", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                updatePage(data);
+            })
+            .catch(error => console.error("Error fetching initial prediction:", error));
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchFilters();
+            initialPrediction(); // Trigger initial prediction
+            document.getElementById("state").addEventListener("change", updateFilters);
+            document.getElementById("category").addEventListener("change", updateFilters);
+        });
+
+        document.getElementById("filterForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            fetch("/predict", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                updatePage(data);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchFilters();
+            document.getElementById("state").addEventListener("change", updateFilters);
+            document.getElementById("category").addEventListener("change", updateFilters);
+        });
+
+        function fetchFilters() {
+            fetch("/filters")
+                .then(response => response.json())
+                .then(data => {
+                    populateDropdown("state", data.states);
+                    populateDropdown("district", data.districts);
+                    populateDropdown("category", data.categories);
+                    populateDropdown("type", data.types);
+                })
+                .catch(error => console.error("Error fetching filters:", error));
+        }
+
+        function updateFilters() {
+            let selectedState = document.getElementById("state").value;
+            let selectedCategory = document.getElementById("category").value;
+
+            fetch(`/update_filters?state=${selectedState}&category=${selectedCategory}`)
+                .then(response => response.json())
+                .then(data => {
+                    populateDropdown("district", data.districts);
+                    populateDropdown("type", data.types);
+                })
+                .catch(error => console.error("Error updating filters:", error));
+        }
+
+        function populateDropdown(id, options) {
+            const select = document.getElementById(id);
+            select.innerHTML = `<option value="All">All</option>`;
+            options.forEach(option => {
+                const opt = document.createElement("option");
+                opt.value = option;
+                opt.textContent = option;
+                select.appendChild(opt);
+            });
+        }
+
+        document.getElementById("filterForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            fetch("/predict", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                updatePage(data);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+        });
 
   // JavaScript for Carousel Functionality
   const slides = document.querySelector('.carousel-slides');

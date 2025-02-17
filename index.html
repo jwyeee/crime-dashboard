@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Malaysia Crime</title>
+    <title>Crime Lens</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -26,11 +26,7 @@
 <div class="main-container">
     <div class="sidebar" id="sidebar">    
         <div class="filters">
-            <h3>FILTERS
-                <button id="resetFiltersButton">
-                    <img src="https://icon-library.com/images/reset-icon-png/reset-icon-png-2.jpg" alt="Reset Icon" style="width: 25px; height: auto;">
-                </button>
-            </h3>
+            <h3>FILTERS</h3>
             <!-- Range Slider for selecting year range -->
             <div class="filter-container">
                 <label for="yearRangeStart">Year Range: </label>
@@ -81,6 +77,9 @@
                     <option value="W.P. Kuala Lumpur">Wilayah Persekutuan Kuala Lumpur</option>
                 </select>
             </div>
+            <button id="resetFiltersButton">
+                <img src="https://icon-library.com/images/loop-icon-png/loop-icon-png-7.jpg" alt="Reset Icon" style="width: 20px; height: auto;">
+            </button>
         </div>
         <hr> 
         
@@ -132,12 +131,6 @@
                         <img src="https://cdn-icons-png.flaticon.com/512/2886/2886662.png" alt="Page Icon" style="width: 35px; height: auto;">
                     </button>
                     <span class="tooltiptext">Other Page</span>
-                </div>
-                <div class="chatbot-toggle">
-                    <button id="chatbot-toggle-button">
-                        <img src="https://www.svgrepo.com/show/379963/chatbot.svg" alt="Chatbot Icon" style="width: 35px; height: auto;">
-                    </button>
-                    <span class="tooltiptext">Chatbot</span>
                 </div>
                 <div class="help">
                     <div>
@@ -322,8 +315,6 @@ toggleBtn.addEventListener('click', () => {
     // Toggle content's expanded state
     content.classList.toggle('expanded');
 });
-
-
 
 const chatbotToggleButton = document.getElementById("chatbot-toggle-button");
 const chatbotContainer = document.getElementById("chatbot-container");
@@ -546,7 +537,7 @@ async function generateTotalCategoryTypeCards(data, startYear, endYear, selected
    function getCrimeLevel(totalCrimes) {
         const maxCrimes = 158144;
         if (totalCrimes > (2 / 3) * maxCrimes) {
-            return { level: 'High', color: 'red' };
+            return { level: 'High', color: '#dd1717' };
         } else if (totalCrimes > (1 / 3) * maxCrimes) {
             return { level: 'Medium', color: 'orange' };
         } else {
@@ -845,7 +836,6 @@ function generateTop5BarChart(data, startYear, endYear, selectedCategory, select
     });
 }
 
-// Function to generate the line chart with Highcharts
 function generateLineChart(data, startYear, endYear, selectedCategory, selectedCrimeType, selectedState) {
     // Filter the data for Malaysia or the selected state
     const filteredData = data.filter(row => 
@@ -892,7 +882,6 @@ function generateLineChart(data, startYear, endYear, selectedCategory, selectedC
         all: '#FF5722' 
     };
 
-    // Generate the line chart using Highcharts
     Highcharts.chart('crimeLineChart', {
         chart: { type: 'line' },
         title: { 
@@ -917,7 +906,7 @@ function generateLineChart(data, startYear, endYear, selectedCategory, selectedC
                 contextButton: {
                     enabled: true,
                     theme: {
-                        fill: '#F0F0F0' // Replace with your desired color (e.g., '#333')
+                        fill: '#F0F0F0' 
                     }
                 }
             }

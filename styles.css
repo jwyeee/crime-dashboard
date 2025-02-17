@@ -475,6 +475,7 @@ h3 {
     grid-gap: 12px; /* Increase space between grid items */
     width: 100%;
     padding: 10px;
+    padding-top: 20px;
     box-sizing: border-box;
 }
 
@@ -493,8 +494,9 @@ h3 {
 
 /* Hover effect for chart item */
 .chart-item:hover {
-    transform: translateY(-5px) rotate(3deg); /* Slight hover effect with tilt */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+    background-color: white;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); /* Stronger shadow to highlight */
+    transform: scale(1.05); /* Slight zoom effect for emphasis */
 }
 
 /* Styling for specific chart containers */
